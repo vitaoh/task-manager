@@ -23,7 +23,7 @@ public class AppConfig {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
             Document document = docBuilder.parse(
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream("./model/framework/app-config.xml")
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream("./framework/app-config.xml")
             );
             document.getDocumentElement().normalize();
             Element config = document.getDocumentElement();

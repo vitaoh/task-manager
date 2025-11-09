@@ -1,4 +1,4 @@
-package model.framework;
+package framework;
 
 import controller.AppConfig;
 import java.sql.Connection;

@@ -13,14 +13,16 @@
             <br>
 
             <form action="login" method="post">
-                <label for="user">Usuário</label>
-                <input type="text" id="user" name="user" required>
-                <br>
+                <div class="input-group">
+                    <input type="text" id="user" name="user" placeholder=" " required maxlength="50">
+                    <label for="user">Usuário</label>
+                </div>
 
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required>
-                <br>
-                
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Senha</label>
+                </div>
+
                 <button type="submit">Entrar</button>
             </form>
 

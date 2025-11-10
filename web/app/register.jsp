@@ -13,21 +13,26 @@
             <br>
 
             <form action="register" method="post">
-                <label for="name">Nome completo</label>
-                <input type="text" id="name" name="name" required>
-                <br>
 
-                <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" required>
-                <br>
+                <div class="input-group">
+                    <input type="text" id="name" name="name" placeholder=" " required maxlength="50">
+                    <label for="name">Nome</label>
+                </div>
 
-                <label for="user">Usuário</label>
-                <input type="text" id="user" name="user" required>
-                <br>
+                <div class="input-group">
+                    <input type="email" id="email" name="email" placeholder=" " required maxlength="50">
+                    <label for="email">E-mail</label>
+                </div>
 
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" required>
-                <br>
+                <div class="input-group">
+                    <input type="text" id="user" name="user" placeholder=" " required maxlength="50">
+                    <label for="user">Usuário</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Senha</label>
+                </div>
 
                 <button type="submit">Registrar</button>
             </form>

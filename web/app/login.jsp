@@ -1,4 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    HttpSession sessao = request.getSession(false);
+    if (sessao != null && (sessao.getAttribute("user") != null)){
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
+    }
+%>
 <!DOCTYPE html>
 <html>
     <head>

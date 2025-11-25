@@ -3,4 +3,8 @@
     <welcome-file-list>
         <welcome-file>/app/login.jsp</welcome-file>
     </welcome-file-list>
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/app</url-pattern>
+    </servlet-mapping>
 </web-app>

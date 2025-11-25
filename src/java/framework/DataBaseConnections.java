@@ -1,6 +1,5 @@
 package framework;
 
-import controller.AppConfig;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.sql.DriverManager;

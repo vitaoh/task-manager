@@ -16,7 +16,16 @@
     <body>
         <div class="container">
             <h1>Login</h1>
+            
             <br>
+            <%                String msg = (String) request.getAttribute("msg");
+                if (msg != null) {
+            %>
+            <div style="color: #dc3545; background-color: rgba(220, 53, 69, 0.1); padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
+                <%= msg%>
+            </div>
+            <% } %>
+            
             <br>
 
             <%                System.out.println("=== LOGIN.JSP CARREGADO ===");
@@ -37,7 +46,7 @@
             </form>
 
             <div class="register-link">
-                Não tem conta? <a href="${pageContext.request.contextPath}/app?task=register">Registre-se aqui</a>
+                Não tem conta? <a href="${pageContext.request.contextPath}/app/register.jsp">Registre-se aqui</a>
             </div>
         </div>
     </body>

@@ -11,6 +11,8 @@
         <div class="container">
             <h1>Registrar</h1>
             <h2>Crie sua conta</h2>
+            
+            <br>
 
             <%
                 String msg = (String) request.getAttribute("msg");
@@ -21,6 +23,8 @@
                 </div>
             <% } %>
 
+            <br>
+            
             <form action="${pageContext.request.contextPath}/app?task=register" method="POST">
                 <div class="input-group">
                     <input 
@@ -73,7 +77,7 @@
             </form>
 
             <div class="register-link">
-                Já tem conta? <a href="${pageContext.request.contextPath}/app?task=login">Faça login</a>
+                Já tem conta? <a href="${pageContext.request.contextPath}/app/login.jsp">Faça login</a>
             </div>
         </div>
     </body>

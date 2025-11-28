@@ -12,6 +12,14 @@
         <servlet-name>FrontController</servlet-name>
         <url-pattern>/app</url-pattern>
     </servlet-mapping>
+    <filter>
+        <filter-name>AuthenticatorLogin</filter-name>
+        <filter-class>controller.AuthenticatorLogin</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticatorLogin</filter-name>
+        <url-pattern>/app/logged_in/*</url-pattern>
+    </filter-mapping>
     <session-config>
         <session-timeout>2880</session-timeout>
     </session-config>

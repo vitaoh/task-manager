@@ -1,12 +1,5 @@
 <%@page import="model.User" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/app/login.jsp");
-        return;
-    }
-%>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>

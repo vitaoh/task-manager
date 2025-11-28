@@ -76,7 +76,7 @@ public class User extends DataAccessObject {
 
     @Override
     protected String getWhereClauseForOneEntity() {
-        return "user = " + getUser();
+        return "user = '" + getUser() + "'";
     }
 
     @Override

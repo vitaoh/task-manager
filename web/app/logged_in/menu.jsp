@@ -1,12 +1,16 @@
 <%@page import="model.User" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/app/login.jsp");
-        return;
+    System.out.println("=== MENU.JSP CHAMADO ===");
+    HttpSession sess = request.getSession(false);
+    System.out.println("Session encontrada: " + (sess != null ? "SIM" : "NÃO"));
+    if (sess != null) {
+        System.out.println("Session ID: " + sess.getId());
+        User user = (User) sess.getAttribute("user");
+        System.out.println("User na sessão: " + (user != null ? user.getName() : "NULL"));
     }
 %>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,13 +20,16 @@
     </head>
     <body>
         <div class="container">
+            <%
+                User user = (User) session.getAttribute("user");
+            %>
             <h1>Menu</h1>
             <h2>Bem-vindo, <%= user.getName()%>!</h2>
             <nav>
                 <ul style="list-style:none; padding:0;">
-                    <li><a href="${pageContext.request.contextPath}/logged_in/tasks.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📋 Tarefas</a></li>
-                    <li><a href="${pageContext.request.contextPath}/logged_in/categories.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📁 Categorias</a></li>
-                    <li><a href="${pageContext.request.contextPath}/logged_in/comments.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">💬 Comentários</a></li>
+                    <li><a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📋 Tarefas</a></li>
+                    <li><a href="${pageContext.request.contextPath}/app/logged_in/categories.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📁 Categorias</a></li>
+                    <li><a href="${pageContext.request.contextPath}/app/logged_in/comments.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">💬 Comentários</a></li>
                     <li><a href="${pageContext.request.contextPath}/app?task=logout" style="display:block; padding:10px; border-radius:5px; color:#dc3545; text-decoration:none;">🚪 Logout</a></li>
                 </ul>
             </nav>

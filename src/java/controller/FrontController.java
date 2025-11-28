@@ -103,7 +103,7 @@ public class FrontController extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/logged_in/tasks.jsp");
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
     }
 
     private void doGetCategory(HttpServletRequest request, HttpServletResponse response)
@@ -121,7 +121,7 @@ public class FrontController extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/logged_in/categories.jsp");
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
     }
 
     private void doGetComment(HttpServletRequest request, HttpServletResponse response)
@@ -139,7 +139,7 @@ public class FrontController extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/logged_in/comments.jsp");
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
     }
 
     private void doGetUser(HttpServletRequest request, HttpServletResponse response)
@@ -159,7 +159,7 @@ public class FrontController extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/logged_in/users.jsp");
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/users.jsp");
     }
 
     private void doGetLogout(HttpServletRequest request, HttpServletResponse response)
@@ -199,10 +199,10 @@ public class FrontController extends HttpServlet {
 
             task.save();
 
-            response.sendRedirect(request.getContextPath() + "/logged_in/tasks.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         } catch (NumberFormatException e) {
             ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/logged_in/tasks.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         }
     }
 
@@ -225,10 +225,10 @@ public class FrontController extends HttpServlet {
 
             category.save();
 
-            response.sendRedirect(request.getContextPath() + "/logged_in/categories.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         } catch (NumberFormatException e) {
             ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/logged_in/categories.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         }
     }
 
@@ -253,10 +253,10 @@ public class FrontController extends HttpServlet {
 
             comment.save();
 
-            response.sendRedirect(request.getContextPath() + "/logged_in/comments.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
         } catch (NumberFormatException e) {
             ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/logged_in/comments.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
         }
     }
 
@@ -283,10 +283,10 @@ public class FrontController extends HttpServlet {
 
             user.save();
 
-            response.sendRedirect(request.getContextPath() + "/logged_in/users.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/users.jsp");
         } catch (Exception e) {
             ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/logged_in/users.jsp");
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/users.jsp");
         }
     }
 
@@ -372,6 +372,11 @@ public class FrontController extends HttpServlet {
 
     private void doPostLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+
+        System.out.println("=== doPostLogin INICIADO ===");
+        System.out.println("Método HTTP: " + request.getMethod());
+        System.out.println("Content Type: " + request.getContentType());
+
         try {
             String userName = request.getParameter("user");
             String password = request.getParameter("password");
@@ -387,6 +392,34 @@ public class FrontController extends HttpServlet {
             user.setUser(userName);
             boolean loaded = user.load();
 
+            System.out.println("=== DEBUG LOGIN ===");
+            System.out.println("Username: " + userName);
+            System.out.println("Usuário encontrado: " + loaded);
+            if (loaded) {
+                System.out.println("Senha no banco: " + user.getPassword());
+                System.out.println("Senha digitada (criptografada): " + user.getPassword()); // Isso vai mostrar a senha criptografada
+            }
+
+//            if (loaded && user.getPassword().equals(password)) {
+//                // Invalidar sessão anterior se existir
+//                HttpSession session = request.getSession(false);
+//                if (session != null) {
+//                    session.invalidate();
+//                }
+//
+//                // Criar nova sessão
+//                session = request.getSession(true);
+//                session.setAttribute("user", user);
+//                session.setMaxInactiveInterval(60 * 60); // 1 hora
+//
+//                System.out.println("=== SESSÃO CRIADA ===");
+//                System.out.println("Session ID: " + session.getId());
+//                System.out.println("User no banco: " + user.getName());
+//                System.out.println("Context Path: " + request.getContextPath());
+//
+//                request.getRequestDispatcher("/app/logged_in/menu.jsp").forward(request, response);
+//
+//            }
             if (loaded && user.getPassword().equals(password)) {
                 // Invalidar sessão anterior se existir
                 HttpSession session = request.getSession(false);
@@ -397,9 +430,15 @@ public class FrontController extends HttpServlet {
                 // Criar nova sessão
                 session = request.getSession(true);
                 session.setAttribute("user", user);
-                session.setMaxInactiveInterval(60 * 60); // 1 hora
+                session.setMaxInactiveInterval(60 * 60);
 
-                response.sendRedirect(request.getContextPath() + "/logged_in/menu.jsp");
+                // TESTE: Simples página HTML em texto
+                response.setContentType("text/html; charset=UTF-8");
+                response.getWriter().println("<html><body>");
+                response.getWriter().println("<h1>Login bem-sucedido!</h1>");
+                response.getWriter().println("<p>Bem-vindo, " + user.getName() + "</p>");
+                response.getWriter().println("<a href='" + request.getContextPath() + "/app/logged_in/menu.jsp'>Clique aqui para ir ao menu</a>");
+                response.getWriter().println("</body></html>");
             } else {
                 request.setAttribute("msg", "❌ Usuário ou senha incorreta");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);

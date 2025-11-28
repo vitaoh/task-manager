@@ -73,7 +73,7 @@
             </form>
 
             <div class="register-link">
-                Já tem conta? <a href="${pageContext.request.contextPath}/app/login.jsp">Faça login</a>
+                Já tem conta? <a href="${pageContext.request.contextPath}/app?task=login">Faça login</a>
             </div>
         </div>
     </body>

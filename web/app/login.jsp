@@ -1,9 +1,10 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%
     HttpSession sessao = request.getSession(false);
-    if (sessao != null && (sessao.getAttribute("user") != null)){
+    if (sessao != null && (sessao.getAttribute("user") != null)) {
         response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
     }
+
 %>
 <!DOCTYPE html>
 <html>
@@ -18,7 +19,10 @@
             <br>
             <br>
 
-            <form action="login" method="post">
+            <%                System.out.println("=== LOGIN.JSP CARREGADO ===");
+            %>
+
+            <form action="${pageContext.request.contextPath}/app?task=login" method="POST">
                 <div class="input-group">
                     <input type="text" id="user" name="user" placeholder=" " required maxlength="50">
                     <label for="user">Usuário</label>
@@ -33,8 +37,7 @@
             </form>
 
             <div class="register-link">
-                Ainda não tem conta? 
-                <a href="${pageContext.request.contextPath}/app/register.jsp">Cadastre-se</a>
+                Não tem conta? <a href="${pageContext.request.contextPath}/app?task=register">Registre-se aqui</a>
             </div>
         </div>
     </body>

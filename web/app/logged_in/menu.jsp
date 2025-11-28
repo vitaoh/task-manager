@@ -1,16 +1,5 @@
 <%@page import="model.User" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
-<%
-    System.out.println("=== MENU.JSP CHAMADO ===");
-    HttpSession sess = request.getSession(false);
-    System.out.println("Session encontrada: " + (sess != null ? "SIM" : "NÃO"));
-    if (sess != null) {
-        System.out.println("Session ID: " + sess.getId());
-        User user = (User) sess.getAttribute("user");
-        System.out.println("User na sessão: " + (user != null ? user.getName() : "NULL"));
-    }
-%>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,9 +11,12 @@
         <div class="container">
             <%
                 User user = (User) session.getAttribute("user");
+                System.out.println("=== MENU.JSP CHAMADO ===");
+                System.out.println("Session ID: " + session.getId());
+                System.out.println("User na sessão: " + (user != null ? user.getUser() : "NULL"));
             %>
             <h1>Menu</h1>
-            <h2>Bem-vindo, <%= user.getName()%>!</h2>
+            <h2>Bem-vindo, <%= user.getUser()%>!</h2>
             <nav>
                 <ul style="list-style:none; padding:0;">
                     <li><a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📋 Tarefas</a></li>

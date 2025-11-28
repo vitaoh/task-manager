@@ -54,10 +54,18 @@ public class FrontController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        System.out.println("\n=== doPost CHAMADO ===");
+        System.out.println("URI: " + request.getRequestURI());
+        System.out.println("Task parameter: " + request.getParameter("task"));
+        System.out.println("User parameter: " + request.getParameter("user"));
+        System.out.println("Password parameter: " + request.getParameter("password"));
+
         String task = request.getParameter("task");
         if (task == null) {
             task = "";
         }
+
+        System.out.println("Task value after null check: " + task);
 
         try {
             switch (task) {
@@ -77,12 +85,16 @@ public class FrontController extends HttpServlet {
                     doPostRegister(request, response);
                     break;
                 case "login":
+                    System.out.println("Chamando doPostLogin...");
                     doPostLogin(request, response);
                     break;
                 default:
+                    System.out.println("Task nao reconhecido: " + task);
                     doDefault(request, response);
             }
         } catch (Exception ex) {
+            System.out.println("EXCEPTION em doPost: " + ex.getMessage());
+            ex.printStackTrace();
             ExceptionLogTrack.getInstance().addLog(ex);
             doDefault(request, response);
         }
@@ -298,8 +310,6 @@ public class FrontController extends HttpServlet {
             String user = request.getParameter("user");
             String password = request.getParameter("password");
 
-            // ==================== VALIDAÇÕES ====================
-            // Validar se campos estão vazios
             if (name == null || name.trim().isEmpty()
                     || email == null || email.trim().isEmpty()
                     || user == null || user.trim().isEmpty()
@@ -310,57 +320,46 @@ public class FrontController extends HttpServlet {
                 return;
             }
 
-            // Validar comprimento mínimo de senha
             if (password.length() < 6) {
                 request.setAttribute("msg", "⚠️ A senha deve ter pelo menos 6 caracteres");
                 request.getRequestDispatcher("/app/register.jsp").forward(request, response);
                 return;
             }
 
-            // Validar comprimento máximo de usuário
             if (user.length() > 50) {
                 request.setAttribute("msg", "⚠️ O usuário não pode ter mais de 50 caracteres");
                 request.getRequestDispatcher("/app/register.jsp").forward(request, response);
                 return;
             }
 
-            // Validar formato de email
             if (!email.contains("@") || !email.contains(".")) {
                 request.setAttribute("msg", "⚠️ E-mail inválido");
                 request.getRequestDispatcher("/app/register.jsp").forward(request, response);
                 return;
             }
 
-            // ==================== VALIDAR USUÁRIO DUPLICADO ====================
             User userCheck = new User();
             userCheck.setUser(user);
 
-            // Tentar carregar um usuário com o mesmo name
             try {
                 if (userCheck.load()) {
-                    // Se load retornar true, significa que o usuário já existe
                     request.setAttribute("msg", "⚠️ Este usuário já existe. Escolha outro!");
                     request.getRequestDispatcher("/app/register.jsp").forward(request, response);
                     return;
                 }
             } catch (Exception e) {
-                // Se lançar exceção ao não encontrar, é ok, significa que é único
                 ExceptionLogTrack.getInstance().addLog(e);
             }
 
-            // ==================== CRIAR NOVO USUÁRIO ====================
             User newUser = new User();
             newUser.setName(name);
             newUser.setEmail(email);
             newUser.setUser(user);
             newUser.setPassword(password);
 
-            // Tentar salvar
             newUser.save();
 
-            // ==================== SUCESSO ====================
             request.setAttribute("msg", "✅ Registro realizado com sucesso! Faça login agora.");
-            // CORRIGIDO: redirecionar para /app/login.jsp ao invés de /home/login.jsp
             request.getRequestDispatcher("/app/login.jsp").forward(request, response);
 
         } catch (Exception e) {
@@ -374,53 +373,49 @@ public class FrontController extends HttpServlet {
             throws ServletException, IOException, SQLException {
 
         System.out.println("=== doPostLogin INICIADO ===");
-        System.out.println("Método HTTP: " + request.getMethod());
-        System.out.println("Content Type: " + request.getContentType());
 
         try {
             String userName = request.getParameter("user");
-            String password = request.getParameter("password");
+            String passwordRaw = request.getParameter("password");
+
+            System.out.println("=== DEBUG LOGIN ===");
+            System.out.println("Username: " + userName);
+            System.out.println("Password recebido (plain): " + passwordRaw);
 
             // Validar campos vazios
-            if (userName == null || userName.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            if (userName == null || userName.trim().isEmpty() || passwordRaw == null || passwordRaw.trim().isEmpty()) {
                 request.setAttribute("msg", "⚠️ Usuário e senha são obrigatórios");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);
                 return;
             }
 
+            // Carregar usuário do banco
             User user = new User();
             user.setUser(userName);
             boolean loaded = user.load();
 
-            System.out.println("=== DEBUG LOGIN ===");
-            System.out.println("Username: " + userName);
             System.out.println("Usuário encontrado: " + loaded);
-            if (loaded) {
-                System.out.println("Senha no banco: " + user.getPassword());
-                System.out.println("Senha digitada (criptografada): " + user.getPassword()); // Isso vai mostrar a senha criptografada
+
+            if (!loaded) {
+                System.out.println("❌ Usuário não encontrado");
+                request.setAttribute("msg", "❌ Usuário ou senha incorreta");
+                request.getRequestDispatcher("/app/login.jsp").forward(request, response);
+                return;
             }
 
-//            if (loaded && user.getPassword().equals(password)) {
-//                // Invalidar sessão anterior se existir
-//                HttpSession session = request.getSession(false);
-//                if (session != null) {
-//                    session.invalidate();
-//                }
-//
-//                // Criar nova sessão
-//                session = request.getSession(true);
-//                session.setAttribute("user", user);
-//                session.setMaxInactiveInterval(60 * 60); // 1 hora
-//
-//                System.out.println("=== SESSÃO CRIADA ===");
-//                System.out.println("Session ID: " + session.getId());
-//                System.out.println("User no banco: " + user.getName());
-//                System.out.println("Context Path: " + request.getContextPath());
-//
-//                request.getRequestDispatcher("/app/logged_in/menu.jsp").forward(request, response);
-//
-//            }
-            if (loaded && user.getPassword().equals(password)) {
+            // ✅ CRIAR OUTRO USER TEMPORÁRIO E CRIPTOGRAFAR A SENHA DIGITADA
+            User userTemp = new User();
+            userTemp.setUser(userName);  // IMPORTANTE: Definir o mesmo usuário para o salt funcionar
+            userTemp.setPassword(passwordRaw);  // Isso vai criptografar com o mesmo salt
+
+            System.out.println("Senha no banco: " + user.getPassword());
+            System.out.println("Senha digitada (criptografada): " + userTemp.getPassword());
+            System.out.println("Senhas batem? " + user.getPassword().equals(userTemp.getPassword()));
+
+            // Agora comparar as DUAS criptografadas
+            if (user.getPassword().equals(userTemp.getPassword())) {
+                System.out.println("✅ LOGIN SUCESSO");
+
                 // Invalidar sessão anterior se existir
                 HttpSession session = request.getSession(false);
                 if (session != null) {
@@ -430,20 +425,21 @@ public class FrontController extends HttpServlet {
                 // Criar nova sessão
                 session = request.getSession(true);
                 session.setAttribute("user", user);
-                session.setMaxInactiveInterval(60 * 60);
+                session.setMaxInactiveInterval(60 * 60); // 1 hora
 
-                // TESTE: Simples página HTML em texto
-                response.setContentType("text/html; charset=UTF-8");
-                response.getWriter().println("<html><body>");
-                response.getWriter().println("<h1>Login bem-sucedido!</h1>");
-                response.getWriter().println("<p>Bem-vindo, " + user.getName() + "</p>");
-                response.getWriter().println("<a href='" + request.getContextPath() + "/app/logged_in/menu.jsp'>Clique aqui para ir ao menu</a>");
-                response.getWriter().println("</body></html>");
+                System.out.println("Session ID: " + session.getId());
+                System.out.println("User na sessão: " + user.getUser());
+
+                // Redirecionar para menu
+                response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
             } else {
+                System.out.println("❌ LOGIN FALHOU - Senhas não batem");
                 request.setAttribute("msg", "❌ Usuário ou senha incorreta");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);
             }
         } catch (Exception e) {
+            System.out.println("❌ EXCEÇÃO: " + e.getMessage());
+            e.printStackTrace();
             request.setAttribute("msg", "❌ Erro ao processar login");
             request.getRequestDispatcher("/app/login.jsp").forward(request, response);
             ExceptionLogTrack.getInstance().addLog(e);

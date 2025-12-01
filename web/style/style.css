@@ -192,3 +192,180 @@ button:hover {
 .register-link a:hover {
     text-decoration: underline;
 }
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.tasks-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+    max-height: 65vh;
+    overflow-y: auto;
+}
+
+.task-card {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: left;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
+
+.task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.task-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--h1-color);
+}
+
+.task-id {
+    font-size: 12px;
+    color: var(--label-default);
+}
+
+.task-badges {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--input-border);
+    color: var(--label-default);
+}
+
+.badge.prio-alta {
+    border-color:#dc3545;
+    color:#dc3545;
+}
+
+.badge.prio-media {
+    border-color:#ffc107;
+    color:#ffc107;
+}
+
+.badge.prio-baixa {
+    border-color:#28a745;
+    color:#28a745;
+}
+
+.badge-status {
+    border-color:#007bff;
+    color:#007bff;
+}
+
+.task-dates {
+    font-size: 12px;
+    color: var(--label-default);
+    margin-bottom: 8px;
+}
+
+.task-actions a {
+    font-size: 13px;
+    margin-right: 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+.task-actions a.delete {
+    color: #dc3545;
+}
+
+.task-actions a:hover {
+    text-decoration: underline;
+}
+
+.new-task-btn {
+    background: #007bff;
+    color: #fff;
+    padding: 9px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.25s;
+}
+
+.new-task-btn:hover {
+    background:#0056b3;
+}
+
+@media (prefers-color-scheme: dark) {
+    .task-card {
+        box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    .task-card:hover {
+        box-shadow: 0 3px 12px rgba(0,0,0,0.6);
+    }
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: var(--label-default);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.select-group select,
+.select-group textarea {
+    width: 100%;
+    padding: 20px 12px 8px 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.select-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.select-group label {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    font-size: 12px;
+    color: var(--label-float);
+    background: var(--label-bg);
+    padding: 0 3px;
+}
+
+.row-inline {
+    display: flex;
+    gap: 10px;
+}
+
+.row-inline .input-group,
+.row-inline .select-group {
+    flex: 1;
+}

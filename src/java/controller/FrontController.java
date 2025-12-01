@@ -102,20 +102,49 @@ public class FrontController extends HttpServlet {
 
     private void doGetTask(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        String action = request.getParameter("action");
 
-        if ("delete".equals(action)) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                Task task = new Task();
-                task.setTask_id(id);
-                task.delete();
-            } catch (NumberFormatException e) {
-                ExceptionLogTrack.getInstance().addLog(e);
-            }
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "";
         }
 
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+        switch (action) {
+            case "delete": {
+                try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    Task task = new Task();
+                    task.setTask_id(id);
+                    task.delete();
+                } catch (NumberFormatException e) {
+                    ExceptionLogTrack.getInstance().addLog(e);
+                }
+                response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+                break;
+            }
+
+            case "edit": { // abrir form em modo edição
+                try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    Task task = new Task();
+                    task.setTask_id(id);
+                    if (task.load()) {        // seu load() deve preencher os campos
+                        request.setAttribute("task", task);
+                    }
+                } catch (Exception e) {
+                    ExceptionLogTrack.getInstance().addLog(e);
+                }
+                request.getRequestDispatcher("/app/logged_in/task-form.jsp")
+                        .forward(request, response);
+                break;
+            }
+
+            case "new":  // abrir form em modo criação
+            default: {
+                request.getRequestDispatcher("/app/logged_in/task-form.jsp")
+                        .forward(request, response);
+                break;
+            }
+        }
     }
 
     private void doGetCategory(HttpServletRequest request, HttpServletResponse response)
@@ -184,39 +213,61 @@ public class FrontController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/app/login.jsp");
     }
 
-    private void doPostTask(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
-        String action = request.getParameter("action");
+private void doPostTask(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException, SQLException {
 
-        try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String priority = request.getParameter("priority");
-            String userName = request.getParameter("user");
-            int categoryId = Integer.parseInt(request.getParameter("category_id"));
+    String action = request.getParameter("action");
+    if (action == null) action = "create";
 
-            Task task = new Task();
+    try {
+        String title       = request.getParameter("title");
+        String description = request.getParameter("description");
+        String priority    = request.getParameter("priority");
+        String status      = request.getParameter("status");
+        String dueDateStr  = request.getParameter("due_date");
+        String categoryStr = request.getParameter("category_id");
+
+        // Usuário logado na sessão (melhor que vir do form)
+        HttpSession session = request.getSession(false);
+        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+        String userName = (userSession != null) ? userSession.getUser()
+                                                : request.getParameter("user");
+
+        Task task = new Task();
+
+        if ("update".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("task_id"));
             task.setTask_id(id);
-
-            if ("update".equals(action)) {
-                task.load();
-            }
-
-            task.setTitle(title);
-            task.setDescription(description);
-            task.setPriority(priority);
-            task.setUser(userName);
-            task.setCategory_id(categoryId);
-
-            task.save();
-
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
-        } catch (NumberFormatException e) {
-            ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+            task.load();   // carrega atual, inclusive created_at etc.
         }
+
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setPriority(priority);
+        task.setStatus(status); // ajuste o tipo conforme seu modelo (enum/string)
+        task.setUser(userName);
+
+        if (categoryStr != null && !categoryStr.trim().isEmpty()) {
+            task.setCategory_id(Integer.parseInt(categoryStr));
+        } else {
+            task.setCategory_id(0);
+        }
+
+        if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
+            task.setDue_date(java.sql.Date.valueOf(dueDateStr));
+        } else {
+            task.setDue_date(null);
+        }
+
+        task.save();   // no modelo, trate created_at / updated_at
+
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+    } catch (Exception e) {
+        ExceptionLogTrack.getInstance().addLog(e);
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
     }
+}
+
 
     private void doPostCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
@@ -382,14 +433,12 @@ public class FrontController extends HttpServlet {
             System.out.println("Username: " + userName);
             System.out.println("Password recebido (plain): " + passwordRaw);
 
-            // Validar campos vazios
             if (userName == null || userName.trim().isEmpty() || passwordRaw == null || passwordRaw.trim().isEmpty()) {
                 request.setAttribute("msg", "⚠️ Usuário e senha são obrigatórios");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);
                 return;
             }
 
-            // Carregar usuário do banco
             User user = new User();
             user.setUser(userName);
             boolean loaded = user.load();
@@ -403,9 +452,8 @@ public class FrontController extends HttpServlet {
                 return;
             }
 
-            // ✅ CRIAR OUTRO USER TEMPORÁRIO E CRIPTOGRAFAR A SENHA DIGITADA
             User userTemp = new User();
-            userTemp.setUser(userName);  // IMPORTANTE: Definir o mesmo usuário para o salt funcionar
+            userTemp.setUser(userName);
             userTemp.setPassword(passwordRaw);  // Isso vai criptografar com o mesmo salt
 
             System.out.println("Senha no banco: " + user.getPassword());
@@ -422,15 +470,13 @@ public class FrontController extends HttpServlet {
                     session.invalidate();
                 }
 
-                // Criar nova sessão
                 session = request.getSession(true);
                 session.setAttribute("user", user);
-                session.setMaxInactiveInterval(60 * 60); // 1 hora
+                session.setMaxInactiveInterval(60 * 60);
 
                 System.out.println("Session ID: " + session.getId());
                 System.out.println("User na sessão: " + user.getUser());
 
-                // Redirecionar para menu
                 response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
             } else {
                 System.out.println("❌ LOGIN FALHOU - Senhas não batem");

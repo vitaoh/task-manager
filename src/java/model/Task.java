@@ -11,7 +11,7 @@ public class Task extends DataAccessObject {
     private String description;
     private String priority;
     private Date due_date;
-    private Enum<?> status;
+    private String status;
     private Date created_at;
     private Date updated_at;
     private String user;
@@ -41,7 +41,7 @@ public class Task extends DataAccessObject {
         return due_date;
     }
 
-    public Enum<?> getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -86,7 +86,7 @@ public class Task extends DataAccessObject {
         addChange("due_date", this.due_date);
     }
 
-    public void setStatus(Enum<?> status) {
+    public void setStatus(String status) {
         this.status = status;
         addChange("status", this.status);
     }
@@ -123,7 +123,7 @@ public class Task extends DataAccessObject {
         description = (String) data.get(2);
         priority = (String) data.get(3);
         due_date = (Date) data.get(4);
-        status = (Enum<?>) data.get(5);
+        status = (String) data.get(5);
         created_at = (Date) data.get(6);
         updated_at = (Date) data.get(7);
         user = (String) data.get(8);

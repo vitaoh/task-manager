@@ -1,3 +1,4 @@
+<%@page import="java.util.List"%>
 <%@page import="model.User, model.Task, java.util.ArrayList" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -8,33 +9,70 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
     </head>
     <body>
-        <div class="container">
-            <h1>Tarefas</h1>
-            <a href="task-form.jsp" style="display:inline-block; margin-bottom:20px; background:#007bff; color:#fff; padding:10px 15px; border-radius:5px; text-decoration:none;">+ Nova Tarefa</a>
+        <div class="container" style="width:420px; max-width:95vw;">
+            <div class="tasks-header">
+                <h1 style="margin:0;">Tarefas</h1>
+                <a href="task-form.jsp" class="new-task-btn">+ Nova</a>
+            </div>
 
-            <table style="width:100%; border-collapse: collapse;">
-                <thead>
-                    <tr style="background:#f0f0f0;">
-                        <th style="padding:10px; border:1px solid #ddd;">ID</th>
-                        <th style="padding:10px; border:1px solid #ddd;">Título</th>
-                        <th style="padding:10px; border:1px solid #ddd;">Prioridade</th>
-                        <th style="padding:10px; border:1px solid #ddd;">Status</th>
-                        <th style="padding:10px; border:1px solid #ddd;">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding:10px; border:1px solid #ddd;">1</td>
-                        <td style="padding:10px; border:1px solid #ddd;">Exemplo</td>
-                        <td style="padding:10px; border:1px solid #ddd;">Alta</td>
-                        <td style="padding:10px; border:1px solid #ddd;">Pendente</td>
-                        <td style="padding:10px; border:1px solid #ddd;">
-                            <a href="task-edit.jsp?id=1" style="color:#007bff; margin-right:10px;">Editar</a>
-                            <a href="${pageContext.request.contextPath}/app?task=task&action=delete&id=1" style="color:#dc3545;">Excluir</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="tasks-wrapper">
+                <%
+                    List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+                    if (tasks == null || tasks.isEmpty()) {
+                %>
+                <p style="color:var(--label-default); font-size:14px;">Nenhuma tarefa cadastrada ainda.</p>
+                <%
+                    } else {
+                        for (Task t : tasks) {
+                            String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
+                            Enum status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
+                            String createdAt = t.getCreated_at().toString();   // DATETIME
+                            java.util.Date upd = t.getUpdated_at();
+                            String updatedAt = (upd != null ? upd.toString() : null);
+                %>
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div>
+                            <div class="task-title"><%= t.getTitle()%></div>
+                            <div class="task-id">#<%= t.getTask_id()%></div>
+                        </div>
+                    </div>
+
+                    <div class="task-badges">
+                        <span class="badge 
+                              <%= "ALTA".equalsIgnoreCase(prioridade) ? "prio-alta"
+                                      : "MEDIA".equalsIgnoreCase(prioridade) ? "prio-media"
+                                      : "prio-baixa"%>">
+                            Prioridade: <%= prioridade%>
+                        </span>
+                        <span class="badge badge-status">
+                            Status: <%= status%>
+                        </span>
+                        <% if (t.getCategory_id() != 0) {%>
+                        <span class="badge">Categoria ID: <%= t.getCategory_id()%></span>
+                        <% }%>
+                    </div>
+
+                    <div class="task-dates">
+                        Criada em: <%= createdAt%><br>
+                        <% if (updatedAt != null) {%>
+                        Atualizada em: <%= updatedAt%>
+                        <% } else { %>
+                        Nunca atualizada
+                        <% }%>
+                    </div>
+
+                    <div class="task-actions">
+                        <a href="task-edit.jsp?id=<%= t.getTask_id()%>">Editar</a>
+                        <a href="${pageContext.request.contextPath}/app?task=task&amp;action=delete&amp;id=<%= t.getTask_id()%>" 
+                           class="delete">Excluir</a>
+                    </div>
+                </div>
+                <%
+                        }
+                    }
+                %>
+            </div>
         </div>
     </body>
 </html>

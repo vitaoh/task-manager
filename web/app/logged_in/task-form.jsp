@@ -6,7 +6,7 @@
     LocalDate hoje = LocalDate.now();
     String hojeStr = hoje.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-    Task t = (Task) request.getAttribute("task"); // null = novo, != null = edição
+    Task t = (Task) request.getAttribute("task");
     boolean editing = (t != null);
 %>
 <%
@@ -28,7 +28,6 @@
 
             <h1><%= editing ? "Editar Tarefa" : "Nova Tarefa"%></h1>
 
-            <!-- Envia para FrontController (task=task) -->
             <form action="${pageContext.request.contextPath}/app" method="post">
                 <input type="hidden" name="task" value="task">
                 <input type="hidden" name="action" value="<%= editing ? "update" : "create"%>">
@@ -66,15 +65,15 @@
                     <div class="select-group input-group">
                         <select id="status" name="status" required>
                             <option value="" disabled <%= !editing ? "selected" : ""%>>Selecione</option>
-                            <option value="PENDENTE"
+                            <option value="pendente"
                                     <%= editing && "pendente".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Pendente
                             </option>
-                            <option value="EM_ANDAMENTO"
+                            <option value="em andamento"
                                     <%= editing && "em andamento".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Em andamento
                             </option>
-                            <option value="CONCLUIDA"
+                            <option value="concluida"
                                     <%= editing && "concluida".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Concluída
                             </option>
@@ -88,7 +87,8 @@
                         <input type="date" id="due_date" name="due_date"
                                min="<%= hojeStr%>"
                                value="<%= editing && t.getDue_date() != null ? t.getDue_date().toString() : ""%>"
-                               placeholder=" ">
+                               placeholder=" "
+                               required>
                         <label for="due_date">Data limite</label>
                     </div>
 
@@ -101,7 +101,7 @@
                                         boolean selected = editing && t.getCategory_id() == c.getCategory_id();
                             %>
 
-                            <option value="<%= c.getCategory_id() %>" <%= selected ? "selected" : ""%>>
+                            <option value="<%= c.getCategory_id()%>" <%= selected ? "selected" : ""%>>
                                 <%= c.getName()%>
                             </option>
 

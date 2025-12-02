@@ -101,49 +101,51 @@ public class FrontController extends HttpServlet {
     }
 
     private void doGetTask(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
+            throws ServletException, IOException, Exception {
 
         String action = request.getParameter("action");
         if (action == null) {
             action = "";
         }
 
-        switch (action) {
-            case "delete": {
-                try {
-                    int id = Integer.parseInt(request.getParameter("id"));
-                    Task task = new Task();
-                    task.setTask_id(id);
-                    task.delete();
-                } catch (NumberFormatException e) {
-                    ExceptionLogTrack.getInstance().addLog(e);
-                }
-                response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
-                break;
-            }
+        if (action.equals("delete")) {
+            int id = Integer.parseInt(request.getParameter("id"));
 
-            case "edit": { // abrir form em modo edição
-                try {
-                    int id = Integer.parseInt(request.getParameter("id"));
-                    Task task = new Task();
-                    task.setTask_id(id);
-                    if (task.load()) {        // seu load() deve preencher os campos
-                        request.setAttribute("task", task);
-                    }
-                } catch (Exception e) {
-                    ExceptionLogTrack.getInstance().addLog(e);
-                }
-                request.getRequestDispatcher("/app/logged_in/task-form.jsp")
-                        .forward(request, response);
-                break;
-            }
+            Task task = new Task();
+            task.setTask_id(id);
+            task.delete();
 
-            case "new":  // abrir form em modo criação
-            default: {
-                request.getRequestDispatcher("/app/logged_in/task-form.jsp")
-                        .forward(request, response);
-                break;
-            }
+            // volta para listagem
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+
+        } else if (action.equals("edit")) {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            Task task = new Task();
+            task.setTask_id(id);
+            task.load(); // carrega a tarefa do banco
+
+            // tarefa para o form
+            request.setAttribute("task", task);
+
+            // também carrega as categorias para o <select>
+            java.util.ArrayList<Category> categorias = new Category().getAllTableEntities();
+            request.setAttribute("categorias", categorias);
+
+            request.getRequestDispatcher("/app/logged_in/task-form.jsp")
+                    .forward(request, response);
+
+        } else if (action.equals("new")) {
+            // só abre form vazio, mas com lista de categorias
+            java.util.ArrayList<Category> categorias = new Category().getAllTableEntities();
+            request.setAttribute("categorias", categorias);
+
+            request.getRequestDispatcher("/app/logged_in/task-form.jsp")
+                    .forward(request, response);
+
+        } else {
+            // sem action -> vai para listagem
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         }
     }
 
@@ -233,61 +235,61 @@ public class FrontController extends HttpServlet {
     }
 
     private void doPostTask(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, SQLException {
+            throws ServletException, IOException, Exception {
 
         String action = request.getParameter("action");
         if (action == null) {
             action = "create";
         }
 
-        try {
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String priority = request.getParameter("priority");
-            String status = request.getParameter("status");
-            String dueDateStr = request.getParameter("due_date");
-            String categoryStr = request.getParameter("category_id");
-
-            HttpSession session = request.getSession(false);
-            User userSession = (session != null) ? (User) session.getAttribute("user") : null;
-            String userName = (userSession != null) ? userSession.getUser()
-                    : request.getParameter("user");
-
-            Task task = new Task();
-
-            if ("update".equals(action)) {
-                int id = Integer.parseInt(request.getParameter("task_id"));
-                task.setTask_id(id);
-                task.load(); // mantém created_at
-            } else {
-                task.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-            }
-
-            task.setTitle(title);
-            task.setDescription(description);
-            task.setPriority(priority);
-            task.setStatus(status);
-            task.setUser(userName);
-
-            if (categoryStr != null && !categoryStr.trim().isEmpty()) {
-                task.setCategory_id(Integer.parseInt(categoryStr));
-            } else {
-                task.setCategory_id(0);
-            }
-
-            if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
-                task.setDue_date(java.sql.Date.valueOf(dueDateStr));
-            } else {
-                task.setDue_date(null);
-            }
-
-            task.save();
-
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
-        } catch (Exception e) {
-            ExceptionLogTrack.getInstance().addLog(e);
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+        int id = 0;
+        if ("update".equals(action)) {
+            id = Integer.parseInt(request.getParameter("task_id"));
         }
+
+        String title = request.getParameter("title");
+        String description = request.getParameter("description");
+        String priority = request.getParameter("priority");
+        String status = request.getParameter("status");
+        String dueDateStr = request.getParameter("due_date");
+        String categoryStr = request.getParameter("category_id");
+
+        HttpSession session = request.getSession(false);
+        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+        String userName = (userSession != null) ? userSession.getUser()
+                : request.getParameter("user");
+
+        Task task = new Task();
+        task.setTask_id(id);
+        
+        if ("update".equals(action)) {
+            task.load();
+            task.setUpdated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+        } else {
+            task.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+        }
+
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setPriority(priority);
+        task.setStatus(status);
+        task.setUser(userName);
+
+        if (categoryStr != null && !categoryStr.trim().isEmpty()) {
+            task.setCategory_id(Integer.parseInt(categoryStr));
+        } else {
+            task.setCategory_id(0);
+        }
+
+        if (dueDateStr == null || dueDateStr.trim().isEmpty()) {
+            task.setDue_date(null);
+        } else {
+            task.setDue_date(java.sql.Date.valueOf(dueDateStr)); // DATE
+        }
+
+        task.save();
+
+        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
     }
 
     private void doPostCategory(HttpServletRequest request, HttpServletResponse response)
@@ -310,7 +312,7 @@ public class FrontController extends HttpServlet {
         category.setCategory_id(id);
 
         if ("update".equals(action)) {
-            category.load(); // carrega estado atual se precisar
+            category.load();
         }
 
         category.setName(name);

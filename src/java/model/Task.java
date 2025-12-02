@@ -10,10 +10,10 @@ public class Task extends DataAccessObject {
     private String title;
     private String description;
     private String priority;
-    private Date due_date;
+    private java.sql.Date due_date;
     private String status;
-    private Date created_at;
-    private Date updated_at;
+    private java.sql.Timestamp created_at;
+    private java.sql.Timestamp updated_at;
     private String user;
     private int category_id;
 
@@ -37,7 +37,7 @@ public class Task extends DataAccessObject {
         return priority;
     }
 
-    public Date getDue_date() {
+    public java.sql.Date getDue_date() {
         return due_date;
     }
 
@@ -45,11 +45,11 @@ public class Task extends DataAccessObject {
         return status;
     }
 
-    public Date getCreated_at() {
+    public java.sql.Timestamp getCreated_at() {
         return created_at;
     }
 
-    public Date getUpdated_at() {
+    public java.sql.Timestamp getUpdated_at() {
         return updated_at;
     }
 
@@ -81,7 +81,7 @@ public class Task extends DataAccessObject {
         addChange("priority", this.priority);
     }
 
-    public void setDue_date(Date due_date) {
+    public void setDue_date(java.sql.Date due_date) {
         this.due_date = due_date;
         addChange("due_date", this.due_date);
     }
@@ -91,12 +91,12 @@ public class Task extends DataAccessObject {
         addChange("status", this.status);
     }
 
-    public void setCreated_at(Date created_at) {
+    public void setCreated_at(java.sql.Timestamp created_at) {
         this.created_at = created_at;
         addChange("created_at", this.created_at);
     }
 
-    public void setUpdated_at(Date updated_at) {
+    public void setUpdated_at(java.sql.Timestamp updated_at) {
         this.updated_at = updated_at;
         addChange("updated_at", this.updated_at);
     }
@@ -122,20 +122,39 @@ public class Task extends DataAccessObject {
         title = (String) data.get(1);
         description = (String) data.get(2);
         priority = (String) data.get(3);
-        due_date = (Date) data.get(4);
+
+        Object d = data.get(4);
+        if (d instanceof java.time.LocalDate) {
+            due_date = java.sql.Date.valueOf((java.time.LocalDate) d);
+        } else {
+            due_date = (java.sql.Date) d;
+        }
+
         status = (String) data.get(5);
-        created_at = (Date) data.get(6);
-        updated_at = (Date) data.get(7);
+
+        Object cAt = data.get(6);
+        if (cAt instanceof java.time.LocalDateTime) {
+            created_at = java.sql.Timestamp.valueOf((java.time.LocalDateTime) cAt);
+        } else {
+            created_at = (java.sql.Timestamp) cAt;
+        }
+
+        Object uAt = data.get(7);
+        if (uAt instanceof java.time.LocalDateTime) {
+            updated_at = java.sql.Timestamp.valueOf((java.time.LocalDateTime) uAt);
+        } else {
+            updated_at = (java.sql.Timestamp) uAt;
+        }
+
         user = (String) data.get(8);
         category_id = (Integer) data.get(9);
-
         return this;
     }
-
+    
     @Override
     protected Task copy() {
         Task cp = new Task();
-        
+
         cp.setTask_id(getTask_id());
         cp.setTitle(getTitle());
         cp.setDescription(getDescription());
@@ -146,9 +165,9 @@ public class Task extends DataAccessObject {
         cp.setUpdated_at(getUpdated_at());
         cp.setUser(getUser());
         cp.setCategory_id(getCategory_id());
-        
+
         cp.setNovelEntity(false);
-        
+
         return cp;
     }
 

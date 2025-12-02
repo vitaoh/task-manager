@@ -12,7 +12,7 @@
         <div class="container" style="width:420px; max-width:95vw;">
             <div class="tasks-header">
                 <h1 style="margin:0;">Tarefas</h1>
-                <a href="task-form.jsp" class="new-task-btn">+ Nova</a>
+                <a href="${pageContext.request.contextPath}/app?task=task&action=new" class="new-task-btn">+ Nova</a>
             </div>
 
             <div class="tasks-wrapper">
@@ -26,9 +26,8 @@
                     for (Task t : tasks) {
                         String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
                         String status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
-                        String createdAt = t.getCreated_at().toString();   // DATETIME
-                        java.util.Date upd = t.getUpdated_at();
-                        String updatedAt = (upd != null ? upd.toString() : null);
+                        String createdAt = t.getCreated_at() != null ? t.getCreated_at().toString() : "";
+                        String updatedAt = t.getUpdated_at() != null ? t.getUpdated_at().toString() : null;
                 %>
                 <div class="task-card">
                     <div class="task-card-header">

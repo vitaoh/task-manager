@@ -1,4 +1,6 @@
 <%@page import="model.Task"%>
+<%@ page import="model.Category" %>
+<%@ page import="java.util.List" %>
 <%@ page import="java.time.LocalDate, java.time.format.DateTimeFormatter" %>
 <%
     LocalDate hoje = LocalDate.now();
@@ -6,6 +8,9 @@
 
     Task t = (Task) request.getAttribute("task"); // null = novo, != null = edição
     boolean editing = (t != null);
+%>
+<%
+    List<Category> categorias = (List<Category>) request.getAttribute("categorias");
 %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
@@ -50,9 +55,9 @@
                     <div class="select-group input-group">
                         <select id="priority" name="priority" required>
                             <option value="" disabled <%= !editing ? "selected" : ""%>>Selecione</option>
-                            <option value="ALTA"  <%= editing && "ALTA".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Alta</option>
-                            <option value="MEDIA" <%= editing && "MEDIA".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Média</option>
-                            <option value="BAIXA" <%= editing && "BAIXA".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Baixa</option>
+                            <option value="alta"  <%= editing && "alta".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Alta</option>
+                            <option value="média" <%= editing && "média".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Média</option>
+                            <option value="baixa" <%= editing && "baixa".equalsIgnoreCase(t.getPriority()) ? "selected" : ""%>>Baixa</option>
                         </select>
                         <label for="priority">Prioridade</label>
                     </div>
@@ -63,15 +68,15 @@
                         <select id="status" name="status" required>
                             <option value="" disabled <%= !editing ? "selected" : ""%>>Selecione</option>
                             <option value="PENDENTE"
-                                    <%= editing && "PENDENTE".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
+                                    <%= editing && "pendente".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Pendente
                             </option>
                             <option value="EM_ANDAMENTO"
-                                    <%= editing && "EM_ANDAMENTO".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
+                                    <%= editing && "em andamento".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Em andamento
                             </option>
                             <option value="CONCLUIDA"
-                                    <%= editing && "CONCLUIDA".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
+                                    <%= editing && "concluida".equalsIgnoreCase(String.valueOf(t.getStatus())) ? "selected" : ""%>>
                                 Concluída
                             </option>
                         </select>
@@ -88,12 +93,26 @@
                         <label for="due_date">Data limite</label>
                     </div>
 
-                    <div class="input-group">
-                        <input type="number" id="category_id" name="category_id"
-                               value="<%= editing && t.getCategory_id() != 0 ? t.getCategory_id() : ""%>"
-                               placeholder=" ">
-                        <label for="category_id">Categoria ID</label>
+                    <div class="select-group input-group">
+                        <select id="category_id" name="category_id">
+                            <option value="0">Sem categoria</option>
+
+                            <% if (categorias != null) {
+                                    for (Category c : categorias) {
+                                        boolean selected = editing && t.getCategory_id() == c.getCategory_id();
+                            %>
+
+                            <option value="<%= c.getCategory_id() %>" <%= selected ? "selected" : ""%>>
+                                <%= c.getName()%>
+                            </option>
+
+                            <%  }
+                                }
+                            %>
+                        </select>
+                        <label for="category_id">Categoria</label>
                     </div>
+
                 </div>
 
                 <button type="submit"><%= editing ? "Salvar alterações" : "Criar tarefa"%></button>

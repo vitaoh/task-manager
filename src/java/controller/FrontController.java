@@ -213,61 +213,71 @@ public class FrontController extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/app/login.jsp");
     }
 
-private void doPostTask(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException, SQLException {
+    private void doPostTask(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, SQLException {
 
-    String action = request.getParameter("action");
-    if (action == null) action = "create";
-
-    try {
-        String title       = request.getParameter("title");
-        String description = request.getParameter("description");
-        String priority    = request.getParameter("priority");
-        String status      = request.getParameter("status");
-        String dueDateStr  = request.getParameter("due_date");
-        String categoryStr = request.getParameter("category_id");
-
-        // Usuário logado na sessão (melhor que vir do form)
-        HttpSession session = request.getSession(false);
-        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
-        String userName = (userSession != null) ? userSession.getUser()
-                                                : request.getParameter("user");
-
-        Task task = new Task();
-
-        if ("update".equals(action)) {
-            int id = Integer.parseInt(request.getParameter("task_id"));
-            task.setTask_id(id);
-            task.load();   // carrega atual, inclusive created_at etc.
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "create";
         }
 
-        task.setTitle(title);
-        task.setDescription(description);
-        task.setPriority(priority);
-        task.setStatus(status); // ajuste o tipo conforme seu modelo (enum/string)
-        task.setUser(userName);
+        try {
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+            String priority = request.getParameter("priority");
+            String status = request.getParameter("status");
+            String dueDateStr = request.getParameter("due_date");
+            String categoryStr = request.getParameter("category_id");
 
-        if (categoryStr != null && !categoryStr.trim().isEmpty()) {
-            task.setCategory_id(Integer.parseInt(categoryStr));
-        } else {
-            task.setCategory_id(0);
+            // Usuário logado na sessão (melhor que vir do form)
+            HttpSession session = request.getSession(false);
+            User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+            String userName = (userSession != null) ? userSession.getUser()
+                    : request.getParameter("user");
+
+            Task task = new Task();
+
+            if ("update".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("task_id"));
+                task.setTask_id(id);
+                task.load();   // carrega atual, inclusive created_at etc.
+            }
+
+            task.setTitle(title);
+            task.setDescription(description);
+            task.setPriority(priority);
+            task.setStatus(status); // ajuste o tipo conforme seu modelo (enum/string)
+            
+            if ("update".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("task_id"));
+                task.setTask_id(id);
+                task.load(); // mantém o created_at original
+            } else {
+                task.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+
+            task.setUser(userName);
+
+            if (categoryStr != null && !categoryStr.trim().isEmpty()) {
+                task.setCategory_id(Integer.parseInt(categoryStr));
+            } else {
+                task.setCategory_id(0);
+            }
+
+            if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
+                task.setDue_date(java.sql.Date.valueOf(dueDateStr));
+            } else {
+                task.setDue_date(null);
+            }
+
+            task.save();   // no modelo, trate created_at / updated_at
+
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+        } catch (Exception e) {
+            ExceptionLogTrack.getInstance().addLog(e);
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         }
-
-        if (dueDateStr != null && !dueDateStr.trim().isEmpty()) {
-            task.setDue_date(java.sql.Date.valueOf(dueDateStr));
-        } else {
-            task.setDue_date(null);
-        }
-
-        task.save();   // no modelo, trate created_at / updated_at
-
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
-    } catch (Exception e) {
-        ExceptionLogTrack.getInstance().addLog(e);
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
     }
-}
-
 
     private void doPostCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {

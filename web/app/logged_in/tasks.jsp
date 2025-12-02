@@ -25,7 +25,7 @@
                     } else {
                         for (Task t : tasks) {
                             String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
-                            Enum status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
+                            String status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
                             String createdAt = t.getCreated_at().toString();   // DATETIME
                             java.util.Date upd = t.getUpdated_at();
                             String updatedAt = (upd != null ? upd.toString() : null);

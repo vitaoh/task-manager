@@ -459,3 +459,26 @@ button:hover {
 .back-link:hover {
     text-decoration: underline;
 }
+
+.badge-diff {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--input-border);
+    margin-left: 6px;
+}
+
+.badge-diff-facil {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.badge-diff-media {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+
+.badge-diff-dificil {
+    border-color: #dc3545;
+    color: #dc3545;
+}

@@ -17,7 +17,7 @@
 
             <div class="tasks-wrapper">
                 <%
-                    List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+                    ArrayList<Task> tasks = new Task().getAllTableEntities();
                     if (tasks == null || tasks.isEmpty()) {
                 %>
                 <p style="color:var(--label-default); font-size:14px;">Nenhuma tarefa cadastrada ainda.</p>

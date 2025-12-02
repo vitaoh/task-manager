@@ -22,13 +22,13 @@
                 %>
                 <p style="color:var(--label-default); font-size:14px;">Nenhuma tarefa cadastrada ainda.</p>
                 <%
-                    } else {
-                        for (Task t : tasks) {
-                            String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
-                            String status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
-                            String createdAt = t.getCreated_at().toString();   // DATETIME
-                            java.util.Date upd = t.getUpdated_at();
-                            String updatedAt = (upd != null ? upd.toString() : null);
+                } else {
+                    for (Task t : tasks) {
+                        String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
+                        String status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
+                        String createdAt = t.getCreated_at().toString();   // DATETIME
+                        java.util.Date upd = t.getUpdated_at();
+                        String updatedAt = (upd != null ? upd.toString() : null);
                 %>
                 <div class="task-card">
                     <div class="task-card-header">
@@ -73,6 +73,8 @@
                     }
                 %>
             </div>
+            <a href="${pageContext.request.contextPath}/app/logged_in/menu.jsp"
+               class="back-link">&larr; Voltar para Menu</a>
         </div>
     </body>
 </html>

@@ -7,7 +7,7 @@ public class Category extends DataAccessObject {
 
     private int category_id;
     private String name;
-    private Enum<?> difficulty;
+    private String difficulty;
 
     public Category() {
         super("categories");
@@ -21,7 +21,7 @@ public class Category extends DataAccessObject {
         return name;
     }
 
-    public Enum<?> getDifficulty() {
+    public String getDifficulty() {
         return difficulty;
     }
 
@@ -35,7 +35,7 @@ public class Category extends DataAccessObject {
         addChange("name", this.name);
     }
 
-    public void setDifficulty(Enum<?> difficulty) {
+    public void setDifficulty(String difficulty) {
         this.difficulty = difficulty;
         addChange("difficulty", this.difficulty);
     }
@@ -49,7 +49,7 @@ public class Category extends DataAccessObject {
     protected DataAccessObject fill(ArrayList<Object> data) {
         category_id = (Integer) data.get(0);
         name = (String) data.get(1);
-        difficulty = (Enum<?>) data.get(2);
+        difficulty = (String) data.get(2);
 
         return this;
     }

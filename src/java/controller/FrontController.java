@@ -149,20 +149,50 @@ public class FrontController extends HttpServlet {
 
     private void doGetCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        String action = request.getParameter("action");
 
-        if ("delete".equals(action)) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                Category category = new Category();
-                category.setCategory_id(id);
-                category.delete();
-            } catch (NumberFormatException e) {
-                ExceptionLogTrack.getInstance().addLog(e);
-            }
+        String action = request.getParameter("action");
+        if (action == null) {
+            action = "";
         }
 
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
+        switch (action) {
+            case "delete": {
+                try {
+                    int id = Integer.parseInt(request.getParameter("id"));
+                    Category category = new Category();
+                    category.setCategory_id(id);
+                    category.delete();
+                } catch (NumberFormatException e) {
+                    ExceptionLogTrack.getInstance().addLog(e);
+                }
+                // depois de apagar volta pra lista
+                response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
+                break;
+            }
+
+            case "edit": {    // abre form preenchido
+                try {
+                    int id = Integer.parseInt(request.getParameter("category_id"));
+                    Category category = new Category();
+                    category.setCategory_id(id);
+                    if (category.load()) {
+                        request.setAttribute("category", category);
+                    }
+                } catch (Exception e) {
+                    ExceptionLogTrack.getInstance().addLog(e);
+                }
+                request.getRequestDispatcher("/app/logged_in/category-form.jsp")
+                        .forward(request, response);
+                break;
+            }
+
+            case "new":       // abre form vazio
+            default: {
+                request.getRequestDispatcher("/app/logged_in/category-form.jsp")
+                        .forward(request, response);
+                break;
+            }
+        }
     }
 
     private void doGetComment(HttpServletRequest request, HttpServletResponse response)
@@ -247,7 +277,7 @@ public class FrontController extends HttpServlet {
             task.setDescription(description);
             task.setPriority(priority);
             task.setStatus(status); // ajuste o tipo conforme seu modelo (enum/string)
-            
+
             if ("update".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("task_id"));
                 task.setTask_id(id);
@@ -281,25 +311,31 @@ public class FrontController extends HttpServlet {
 
     private void doPostCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+
         String action = request.getParameter("action");
+        if (action == null) {
+            action = "create";
+        }
 
         try {
-            int id = Integer.parseInt(request.getParameter("category_id"));
             String name = request.getParameter("name");
+            String difficulty = request.getParameter("difficulty"); // NOVO
 
             Category category = new Category();
-            category.setCategory_id(id);
 
             if ("update".equals(action)) {
+                int id = Integer.parseInt(request.getParameter("category_id"));
+                category.setCategory_id(id);
                 category.load();
             }
 
             category.setName(name);
+            category.setDifficulty(difficulty); // garantir que o tipo do setter aceite String
 
             category.save();
 
             response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             ExceptionLogTrack.getInstance().addLog(e);
             response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         }

@@ -23,9 +23,8 @@
     <body>
         <div class="container" style="width:420px; max-width:95vw;">
 
-            <!-- Voltar para lista chamando FrontController -->
             <a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp"
-               class="back-link">&larr; Voltar para tarefas</a>
+               class="back-link">&larr; Voltar para Tarefas</a>
 
             <h1><%= editing ? "Editar Tarefa" : "Nova Tarefa"%></h1>
 

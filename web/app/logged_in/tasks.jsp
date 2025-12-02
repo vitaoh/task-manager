@@ -24,10 +24,26 @@
                 <%
                 } else {
                     for (Task t : tasks) {
-                        String prioridade = t.getPriority();   // ex: ALTA, MEDIA, BAIXA
-                        String status = t.getStatus();     // ex: PENDENTE, CONCLUIDA
-                        String createdAt = t.getCreated_at() != null ? t.getCreated_at().toString() : "";
-                        String updatedAt = t.getUpdated_at() != null ? t.getUpdated_at().toString() : null;
+                        String prioridade = t.getPriority();
+                        String status = t.getStatus();
+
+                        String createdAt = "";
+                        if (t.getCreated_at() != null) {
+                            createdAt = t.getCreated_at().toString();
+                            int dot = createdAt.indexOf('.');
+                            if (dot > 0) {
+                                createdAt = createdAt.substring(0, dot);
+                            }
+                        }
+
+                        String updatedAt = null;
+                        if (t.getUpdated_at() != null) {
+                            updatedAt = t.getUpdated_at().toString();
+                            int dot2 = updatedAt.indexOf('.');
+                            if (dot2 > 0) {
+                                updatedAt = updatedAt.substring(0, dot2);
+                            }
+                        }
                 %>
                 <div class="task-card">
                     <div class="task-card-header">
@@ -38,15 +54,20 @@
                     </div>
 
                     <div class="task-badges">
-                        <span class="badge 
+                        <span class="badge badge-status
                               <%= "ALTA".equalsIgnoreCase(prioridade) ? "prio-alta"
-                                      : "MEDIA".equalsIgnoreCase(prioridade) ? "prio-media"
+                                      : "MÉDIA".equalsIgnoreCase(prioridade) ? "prio-media"
                                       : "prio-baixa"%>">
                             Prioridade: <%= prioridade%>
                         </span>
-                        <span class="badge badge-status">
+
+                        <span class="badge badge-status 
+                              <%= "PENDENTE".equalsIgnoreCase(status) ? "status-pendente"
+                                      : "EM ANDAMENTO".equalsIgnoreCase(status) ? "status-em-andamento"
+                                      : "status-concluida"%>">
                             Status: <%= status%>
                         </span>
+
                         <% if (t.getCategory_id() != 0) {%>
                         <span class="badge">Categoria ID: <%= t.getCategory_id()%></span>
                         <% }%>
@@ -62,7 +83,9 @@
                     </div>
 
                     <div class="task-actions">
-                        <a href="task-edit.jsp?id=<%= t.getTask_id()%>">Editar</a>
+                        <a href="${pageContext.request.contextPath}/app?task=task&action=edit&id=<%= t.getTask_id()%>">
+                            Editar
+                        </a>
                         <a href="${pageContext.request.contextPath}/app?task=task&amp;action=delete&amp;id=<%= t.getTask_id()%>" 
                            class="delete">Excluir</a>
                     </div>

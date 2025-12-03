@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
     </head>
     <body>
-        <div class="container" style="width:640px; max-width:95vw;">
+        <div class="container" style="width:760px; max-width:95vw;">
             <div class="tasks-header">
                 <h1 style="margin:0;">Tarefas</h1>
                 <a href="${pageContext.request.contextPath}/app?task=task&action=new" class="new-task-btn">+ Nova</a>
@@ -18,13 +18,23 @@
 
             <div class="tasks-wrapper">
                 <%
-                    ArrayList<Task> tasks = new Task().getAllTableEntities();
-                    if (tasks == null || tasks.isEmpty()) {
+                    User logged = (User) session.getAttribute("user");
+                    String loggedUser = (logged != null) ? logged.getUser() : null;
+
+                    ArrayList<Task> allTasks = new Task().getAllTableEntities();
+                    boolean hasAny = false;
+
+                    if (loggedUser == null || allTasks == null || allTasks.isEmpty()) {
                 %>
                 <p style="color:var(--label-default); font-size:14px;">Nenhuma tarefa cadastrada ainda.</p>
                 <%
                 } else {
-                    for (Task t : tasks) {
+                    for (Task t : allTasks) {
+                        if (!loggedUser.equals(t.getUser())) {
+                            continue;
+                        }
+                        hasAny = true;
+
                         String prioridade = t.getPriority();
                         String status = t.getStatus();
 
@@ -70,8 +80,16 @@
                         </span>
 
                         <%
-                            Category c = null;
+                            String dueDate = (t.getDue_date() != null) ? t.getDue_date().toString() : null;
+                        %>
+                        <% if (dueDate != null) {%>
+                        <span class="badge badge-due">
+                            Vence em: <%= dueDate%>
+                        </span>
+                        <% } %>
 
+                        <%
+                            Category c = null;
                             if (t.getCategory_id() != 0) {
                                 c = new Category();
                                 c.setCategory_id(t.getCategory_id());
@@ -90,17 +108,9 @@
                         <span class="badge-diff <%= diffClass%>">
                             Dificuldade: <%= diff%>
                         </span>
-                        <% }%>
-
-                        <% if (t.getCategory_id() != 0) {%>
                         <span class="badge">Categoria ID: <%= t.getCategory_id()%></span>
-                        <% }%>
-
-
-                        <% if (c != null) {%>
                         <span class="badge">Nome Categoria: <%= c.getName()%></span>
                         <% }%>
-
                     </div>
 
                     <div class="task-description">
@@ -123,10 +133,16 @@
                         <a href="${pageContext.request.contextPath}/app?task=task&action=edit&id=<%= t.getTask_id()%>">
                             Editar
                         </a>
-                        <a href="${pageContext.request.contextPath}/app?task=task&amp;action=delete&amp;id=<%= t.getTask_id()%>" 
+                        <a href="${pageContext.request.contextPath}/app?task=task&amp;action=delete&amp;id=<%= t.getTask_id()%>"
                            class="delete">Excluir</a>
                     </div>
                 </div>
+                <%
+                    }
+
+                    if (!hasAny) {
+                %>
+                <p style="color:var(--label-default); font-size:14px;">Nenhuma tarefa sua cadastrada ainda.</p>
                 <%
                         }
                     }

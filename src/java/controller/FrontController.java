@@ -54,18 +54,10 @@ public class FrontController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println("\n=== doPost CHAMADO ===");
-        System.out.println("URI: " + request.getRequestURI());
-        System.out.println("Task parameter: " + request.getParameter("task"));
-        System.out.println("User parameter: " + request.getParameter("user"));
-        System.out.println("Password parameter: " + request.getParameter("password"));
-
         String task = request.getParameter("task");
         if (task == null) {
             task = "";
         }
-
-        System.out.println("Task value after null check: " + task);
 
         try {
             switch (task) {
@@ -85,15 +77,12 @@ public class FrontController extends HttpServlet {
                     doPostRegister(request, response);
                     break;
                 case "login":
-                    System.out.println("Chamando doPostLogin...");
                     doPostLogin(request, response);
                     break;
                 default:
-                    System.out.println("Task nao reconhecido: " + task);
                     doDefault(request, response);
             }
         } catch (Exception ex) {
-            System.out.println("EXCEPTION em doPost: " + ex.getMessage());
             ex.printStackTrace();
             ExceptionLogTrack.getInstance().addLog(ex);
             doDefault(request, response);
@@ -115,7 +104,6 @@ public class FrontController extends HttpServlet {
             task.setTask_id(id);
             task.delete();
 
-            // volta para listagem
             response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
 
         } else if (action.equals("edit")) {
@@ -123,12 +111,10 @@ public class FrontController extends HttpServlet {
 
             Task task = new Task();
             task.setTask_id(id);
-            task.load(); // carrega a tarefa do banco
+            task.load();
 
-            // tarefa para o form
             request.setAttribute("task", task);
 
-            // também carrega as categorias para o <select>
             java.util.ArrayList<Category> categorias = new Category().getAllTableEntities();
             request.setAttribute("categorias", categorias);
 
@@ -136,7 +122,7 @@ public class FrontController extends HttpServlet {
                     .forward(request, response);
 
         } else if (action.equals("new")) {
-            // só abre form vazio, mas com lista de categorias
+
             java.util.ArrayList<Category> categorias = new Category().getAllTableEntities();
             request.setAttribute("categorias", categorias);
 
@@ -144,7 +130,6 @@ public class FrontController extends HttpServlet {
                     .forward(request, response);
 
         } else {
-            // sem action -> vai para listagem
             response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         }
     }
@@ -164,24 +149,21 @@ public class FrontController extends HttpServlet {
             category.setCategory_id(id);
             category.delete();
 
-            // volta para a lista
             response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         } else if (action.equals("edit")) {
             int id = Integer.parseInt(request.getParameter("category_id"));
 
             Category category = new Category();
             category.setCategory_id(id);
-            category.load();                  // carrega um registro
+            category.load();
 
             request.setAttribute("category", category);
             request.getRequestDispatcher("/app/logged_in/category-form.jsp")
                     .forward(request, response);
         } else if (action.equals("new")) {
-            // só abre o form vazio
             request.getRequestDispatcher("/app/logged_in/category-form.jsp")
                     .forward(request, response);
         } else {
-            // nenhum action → volta para lista
             response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         }
     }
@@ -261,7 +243,7 @@ public class FrontController extends HttpServlet {
 
         Task task = new Task();
         task.setTask_id(id);
-        
+
         if ("update".equals(action)) {
             task.load();
             task.setUpdated_at(new java.sql.Timestamp(System.currentTimeMillis()));
@@ -450,15 +432,9 @@ public class FrontController extends HttpServlet {
     private void doPostLogin(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
 
-        System.out.println("=== doPostLogin INICIADO ===");
-
         try {
             String userName = request.getParameter("user");
             String passwordRaw = request.getParameter("password");
-
-            System.out.println("=== DEBUG LOGIN ===");
-            System.out.println("Username: " + userName);
-            System.out.println("Password recebido (plain): " + passwordRaw);
 
             if (userName == null || userName.trim().isEmpty() || passwordRaw == null || passwordRaw.trim().isEmpty()) {
                 request.setAttribute("msg", "⚠️ Usuário e senha são obrigatórios");
@@ -481,17 +457,11 @@ public class FrontController extends HttpServlet {
 
             User userTemp = new User();
             userTemp.setUser(userName);
-            userTemp.setPassword(passwordRaw);  // Isso vai criptografar com o mesmo salt
+            userTemp.setPassword(passwordRaw);
 
-            System.out.println("Senha no banco: " + user.getPassword());
-            System.out.println("Senha digitada (criptografada): " + userTemp.getPassword());
-            System.out.println("Senhas batem? " + user.getPassword().equals(userTemp.getPassword()));
-
-            // Agora comparar as DUAS criptografadas
             if (user.getPassword().equals(userTemp.getPassword())) {
                 System.out.println("✅ LOGIN SUCESSO");
 
-                // Invalidar sessão anterior se existir
                 HttpSession session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();
@@ -501,17 +471,12 @@ public class FrontController extends HttpServlet {
                 session.setAttribute("user", user);
                 session.setMaxInactiveInterval(60 * 60);
 
-                System.out.println("Session ID: " + session.getId());
-                System.out.println("User na sessão: " + user.getUser());
-
                 response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
             } else {
-                System.out.println("❌ LOGIN FALHOU - Senhas não batem");
                 request.setAttribute("msg", "❌ Usuário ou senha incorreta");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);
             }
         } catch (Exception e) {
-            System.out.println("❌ EXCEÇÃO: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("msg", "❌ Erro ao processar login");
             request.getRequestDispatcher("/app/login.jsp").forward(request, response);

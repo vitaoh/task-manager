@@ -21,12 +21,11 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
     </head>
     <body>
-        <div class="container" style="width:420px; max-width:95vw;">
-
-            <a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp"
-               class="back-link">&larr; Voltar para Tarefas</a>
+        <div class="container" style="width:500px; max-width:95vw;">
 
             <h1><%= editing ? "Editar Tarefa" : "Nova Tarefa"%></h1>
+
+            <br>
 
             <form action="${pageContext.request.contextPath}/app" method="post">
                 <input type="hidden" name="task" value="task">
@@ -116,6 +115,8 @@
 
                 <button type="submit"><%= editing ? "Salvar alterações" : "Criar tarefa"%></button>
             </form>
+            <a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp"
+               class="back-link">&larr; Voltar para Tarefas</a>
         </div>
     </body>
 </html>

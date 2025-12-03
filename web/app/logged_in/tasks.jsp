@@ -1,3 +1,4 @@
+<%@page import="model.Category"%>
 <%@page import="java.util.List"%>
 <%@page import="model.User, model.Task, java.util.ArrayList" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
@@ -9,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
     </head>
     <body>
-        <div class="container" style="width:420px; max-width:95vw;">
+        <div class="container" style="width:640px; max-width:95vw;">
             <div class="tasks-header">
                 <h1 style="margin:0;">Tarefas</h1>
                 <a href="${pageContext.request.contextPath}/app?task=task&action=new" class="new-task-btn">+ Nova</a>
@@ -68,9 +69,45 @@
                             Status: <%= status%>
                         </span>
 
+                        <%
+                            Category c = null;
+
+                            if (t.getCategory_id() != 0) {
+                                c = new Category();
+                                c.setCategory_id(t.getCategory_id());
+                                c.load();
+                            }
+
+                            String diff = (c != null && c.getDifficulty() != null) ? c.getDifficulty().toString() : "";
+                            String diffClass
+                                    = "fácil".equalsIgnoreCase(diff) ? "badge-diff-facil"
+                                    : "médio".equalsIgnoreCase(diff) ? "badge-diff-media"
+                                    : "difícil".equalsIgnoreCase(diff) ? "badge-diff-dificil"
+                                    : "";
+                        %>
+
+                        <% if (c != null) {%>
+                        <span class="badge-diff <%= diffClass%>">
+                            Dificuldade: <%= diff%>
+                        </span>
+                        <% }%>
+
                         <% if (t.getCategory_id() != 0) {%>
                         <span class="badge">Categoria ID: <%= t.getCategory_id()%></span>
                         <% }%>
+
+
+                        <% if (c != null) {%>
+                        <span class="badge">Nome Categoria: <%= c.getName()%></span>
+                        <% }%>
+
+                    </div>
+
+                    <div class="task-description">
+                        <strong>Descrição:</strong><br>
+                        <%= (t.getDescription() != null && !t.getDescription().isBlank())
+                                ? t.getDescription()
+                                : "Nenhuma descrição informada."%>
                     </div>
 
                     <div class="task-dates">

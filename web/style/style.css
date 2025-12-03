@@ -7,6 +7,8 @@
     --label-float: #007bff;
     --label-bg: transparent;
     --h1-color: #333;
+    --background-secondary: #f7f7f7;
+    --description-text: #444;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,6 +21,8 @@
         --label-float: #1da1f2;
         --label-bg: transparent;
         --h1-color: #fff;
+        --background-secondary: #2a2a2a; /* fundo escuro */
+        --description-text: #ccc;
     }
 }
 
@@ -498,4 +502,16 @@ button:hover {
 .status-concluida {
     border-color: #28a745;
     color: #28a745;
+}
+
+.task-description {
+    margin: 10px 0 12px 0;        
+    padding: 10px 12px;
+    background: var(--background-secondary);
+    border-left: 3px solid var(--label-float);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--description-text);
+    line-height: 1.5;
+    word-wrap: break-word;
 }

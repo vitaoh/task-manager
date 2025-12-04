@@ -20,6 +20,14 @@
         <filter-name>AuthenticatorLogin</filter-name>
         <url-pattern>/app/logged_in/*</url-pattern>
     </filter-mapping>
+    <error-page>
+        <exception-type>java.land.Exception</exception-type>
+        <location>/app/error-page.html</location>
+    </error-page>    
+    <error-page>
+        <error-code>404</error-code>
+        <location>/app/error-page.html</location>
+    </error-page>
     <session-config>
         <session-timeout>2880</session-timeout>
     </session-config>

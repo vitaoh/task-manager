@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -266,7 +267,7 @@ public class FrontController extends HttpServlet {
         if (dueDateStr == null || dueDateStr.trim().isEmpty()) {
             task.setDue_date(null);
         } else {
-            task.setDue_date(java.sql.Date.valueOf(dueDateStr)); // DATE
+            task.setDue_date(java.sql.Date.valueOf(dueDateStr));
         }
 
         task.save();
@@ -446,10 +447,7 @@ public class FrontController extends HttpServlet {
             user.setUser(userName);
             boolean loaded = user.load();
 
-            System.out.println("Usuário encontrado: " + loaded);
-
             if (!loaded) {
-                System.out.println("❌ Usuário não encontrado");
                 request.setAttribute("msg", "❌ Usuário ou senha incorreta");
                 request.getRequestDispatcher("/app/login.jsp").forward(request, response);
                 return;
@@ -460,7 +458,6 @@ public class FrontController extends HttpServlet {
             userTemp.setPassword(passwordRaw);
 
             if (user.getPassword().equals(userTemp.getPassword())) {
-                System.out.println("✅ LOGIN SUCESSO");
 
                 HttpSession session = request.getSession(false);
                 if (session != null) {
@@ -470,6 +467,11 @@ public class FrontController extends HttpServlet {
                 session = request.getSession(true);
                 session.setAttribute("user", user);
                 session.setMaxInactiveInterval(60 * 60);
+
+                Cookie cookie = new Cookie("user", userName);
+                cookie.setMaxAge(60 * 10);
+                cookie.setPath(request.getContextPath());
+                response.addCookie(cookie);
 
                 response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
             } else {

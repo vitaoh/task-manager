@@ -1,40 +1,100 @@
-<%@page import="model.User" %>
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@page import="java.util.ArrayList"%>
+<%@page import="model.Comment"%>
+<%@page import="model.Task"%>
+<%@page import="model.User"%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Comentários | Task Manager</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Comentários</h1>
-        <a href="comment-form.jsp" style="display:inline-block; margin-bottom:20px; background:#007bff; color:#fff; padding:10px 15px; border-radius:5px; text-decoration:none;">+ Novo Comentário</a>
-        
-        <table style="width:100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background:#f0f0f0;">
-                    <th style="padding:10px; border:1px solid #ddd;">ID</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Comentário</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Tarefa ID</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding:10px; border:1px solid #ddd;">1</td>
-                    <td style="padding:10px; border:1px solid #ddd;">Comentário exemplo</td>
-                    <td style="padding:10px; border:1px solid #ddd;">1</td>
-                    <td style="padding:10px; border:1px solid #ddd;">
-                        <a href="comment-edit.jsp?id=1" style="color:#007bff; margin-right:10px;">Editar</a>
-                        <a href="${pageContext.request.contextPath}/app?task=comment&action=delete&id=1" style="color:#dc3545;">Excluir</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <br>
-        <a href="menu.jsp" style="color:#007bff;">← Voltar ao menu</a>
-    </div>
-</body>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Comentários | Task Manager</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
+    </head>
+    <body>
+        <div class="container" style="width:640px; max-width:95vw;">
+
+            <div class="tasks-header">
+                <h1 style="margin:0;">Comentários</h1>
+                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp"
+                   class="new-task-btn">+ Novo</a>
+            </div>
+
+            <div class="tasks-wrapper">
+                <%
+                    User logged = (User) session.getAttribute("user");
+                    String loggedUser = (logged != null) ? logged.getUser() : null;
+
+                    ArrayList<Comment> allComments = new Comment().getAllTableEntities();
+                    boolean hasAny = false;
+
+                    if (loggedUser == null || allComments == null || allComments.isEmpty()) {
+                %>
+                <p style="color:var(--label-default); font-size:14px;">
+                    Nenhum comentário cadastrado ainda.
+                </p>
+                <%
+                } else {
+                    for (Comment c : allComments) {
+                        Task t = new Task();
+                        t.setTask_id(c.getTask_id());
+                        boolean show = false;
+                        String taskTitle = "";
+                        try {
+                            if (t.load() && loggedUser.equals(t.getUser())) {
+                                show = true;
+                                taskTitle = t.getTitle();
+                            }
+                        } catch (Exception e) {
+                        }
+
+                        if (!show) {
+                            continue;
+                        }
+                        hasAny = true;
+                %>
+
+                <div class="task-card">
+                    <div class="task-card-header">
+                        <div>
+                            <div class="task-title">Comentário #<%= c.getComment_id()%></div>
+                            <div class="task-id">
+                                Tarefa: #<%= c.getTask_id()%> - <%= taskTitle%>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="task-description">
+                        <strong>Texto:</strong><br>
+                        <%= c.getComment()%>
+                    </div>
+
+                    <div class="task-actions">
+                        <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?comment_id=<%= c.getComment_id()%>">
+                            Editar
+                        </a>
+                        <a href="${pageContext.request.contextPath}/app?task=comment&action=delete&id=<%= c.getComment_id()%>"
+                           class="delete">
+                            Excluir
+                        </a>
+                    </div>
+                </div>
+
+                <%
+                    } // fim for
+
+                    if (!hasAny) {
+                %>
+                <p style="color:var(--label-default); font-size:14px;">
+                    Nenhum comentário das suas tarefas ainda.
+                </p>
+                <%
+                        }
+                    }
+                %>
+            </div>
+
+            <a href="${pageContext.request.contextPath}/app/logged_in/menu.jsp"
+               class="back-link">← Voltar ao menu</a>
+        </div>
+    </body>
 </html>

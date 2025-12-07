@@ -291,6 +291,10 @@ public class FrontController extends HttpServlet {
         String name = request.getParameter("name");
         String difficulty = request.getParameter("difficulty");
 
+        HttpSession session = request.getSession(false);
+        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+        String userName = (userSession != null) ? userSession.getUser() : null;
+
         Category category = new Category();
         category.setCategory_id(id);
 
@@ -300,6 +304,8 @@ public class FrontController extends HttpServlet {
 
         category.setName(name);
         category.setDifficulty(difficulty);
+        category.setUser(userName);
+
         category.save();
 
         response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");

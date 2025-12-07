@@ -1,6 +1,6 @@
 <%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="model.Category"%>
+<%@page import="model.User"%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -19,23 +19,32 @@
 
             <div class="categories-wrapper">
                 <%
-                    ArrayList<Category> categories = new Category().getAllTableEntities();
-                    if (categories == null || categories.isEmpty()) {
+                    User logged = (User) session.getAttribute("user");
+                    String loggedUser = (logged != null) ? logged.getUser() : null;
+
+                    ArrayList<Category> allCategories = new Category().getAllTableEntities();
+                    boolean hasAny = false;
+
+                    if (loggedUser == null || allCategories == null || allCategories.isEmpty()) {
                 %>
                 <p style="color:var(--label-default); font-size:14px;">
                     Nenhuma categoria cadastrada ainda.
                 </p>
                 <%
                 } else {
-                    for (Category c : categories) {
-                %>
-                <%
-                    String diff = c.getDifficulty() != null ? c.getDifficulty().toString() : "";
-                    String diffClass
-                            = "fácil".equalsIgnoreCase(diff) ? "badge-diff-facil"
-                            : "médio".equalsIgnoreCase(diff) ? "badge-diff-media"
-                            : "difícil".equalsIgnoreCase(diff) ? "badge-diff-dificil"
-                            : "";
+                    for (Category c : allCategories) {
+
+                        if (!loggedUser.equals(c.getUser())) {
+                            continue;
+                        }
+                        hasAny = true;
+
+                        String diff = c.getDifficulty() != null ? c.getDifficulty().toString() : "";
+                        String diffClass
+                                = "fácil".equalsIgnoreCase(diff) ? "badge-diff-facil"
+                                : "médio".equalsIgnoreCase(diff) ? "badge-diff-media"
+                                : "difícil".equalsIgnoreCase(diff) ? "badge-diff-dificil"
+                                : "";
                 %>
                 <div class="category-card">
                     <div class="category-info">
@@ -55,6 +64,14 @@
                         </a>
                     </div>
                 </div>
+                <%
+                    }
+
+                    if (!hasAny) {
+                %>
+                <p style="color:var(--label-default); font-size:14px;">
+                    Nenhuma categoria sua cadastrada ainda.
+                </p>
                 <%
                         }
                     }

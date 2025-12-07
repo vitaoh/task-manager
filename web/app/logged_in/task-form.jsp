@@ -92,8 +92,8 @@
                     </div>
 
                     <div class="select-group input-group">
-                        <select id="category_id" name="category_id">
-                            <option value="0">Sem categoria</option>
+                        <select id="category_id" name="category_id" required>
+                            <option value="0" disabled>Sem categoria</option>
 
                             <% if (categorias != null) {
                                     for (Category c : categorias) {

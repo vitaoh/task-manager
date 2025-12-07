@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="${pageContext.request.contextPath}/style/style.css">
     </head>
     <body>
-        <div class="container" style="width:760px; max-width:95vw;">
+        <div class="container" style="width:800px; max-width:95vw;">
             <div class="tasks-header">
                 <h1 style="margin:0;">Tarefas</h1>
                 <a href="${pageContext.request.contextPath}/app?task=task&action=new" class="new-task-btn">+ Nova</a>

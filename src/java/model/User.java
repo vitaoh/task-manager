@@ -54,7 +54,7 @@ public class User extends DataAccessObject {
             try {
                 // "Salt": usa nome do usuário + senha + tamanho do usuário dividido por 2
                 String salt = getUser() + password + (getUser().length() / 2);
-                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                MessageDigest md = MessageDigest.getInstance("SHA-512");
                 byte[] hashBytes = md.digest(salt.getBytes(StandardCharsets.UTF_8));
 
                 // Converte os bytes para formato hexadecimal (zero padding garantido)

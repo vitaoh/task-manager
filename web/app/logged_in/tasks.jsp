@@ -135,7 +135,6 @@
                         <span style="font-weight:600; color:var(--label-float);">
                             Comentários:
                         </span>
-                        <!-- botão de adicionar comentário para esta tarefa -->
                         <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?task_id=<%= t.getTask_id()%>&from=tasks"
                            style="font-size:12px; margin-left:8px; text-decoration:none; color:#007bff;">
                             + Adicionar

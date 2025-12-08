@@ -4,6 +4,7 @@ import framework.DataAccessObject;
 import java.util.ArrayList;
 
 public class Comment extends DataAccessObject {
+
     private int comment_id;
     private String comment;
     private int task_id;
@@ -56,13 +57,13 @@ public class Comment extends DataAccessObject {
     @Override
     protected Comment copy() {
         Comment cp = new Comment();
-        
+
         cp.setComment_id(getComment_id());
         cp.setComment(getComment());
         cp.setTask_id(getTask_id());
-        
+
         cp.setNovelEntity(false);
-        
+
         return cp;
     }
 

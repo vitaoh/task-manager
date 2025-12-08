@@ -1,6 +1,6 @@
 <%@page import="model.Category"%>
 <%@page import="java.util.List"%>
-<%@page import="model.User, model.Task, java.util.ArrayList" %>
+<%@page import="model.User, model.Task, model.Comment, java.util.ArrayList" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -22,6 +22,7 @@
                     String loggedUser = (logged != null) ? logged.getUser() : null;
 
                     ArrayList<Task> allTasks = new Task().getAllTableEntities();
+                    ArrayList<Comment> allComments = new Comment().getAllTableEntities();
                     boolean hasAny = false;
 
                     if (loggedUser == null || allTasks == null || allTasks.isEmpty()) {
@@ -120,14 +121,57 @@
                                 : "Nenhuma descrição informada."%>
                     </div>
 
-                    <div class="task-dates">
+                    <div class="task-dates" style="margin-bottom: 12px">
                         Criada em: <%= createdAt%><br>
                         <% if (updatedAt != null) {%>
                         Atualizada em: <%= updatedAt%>
                         <% } else { %>
                         Nunca atualizada
-                        <% }%>
+                        <% } %>
                     </div>
+
+                    <!-- Comentários da tarefa -->
+                    <div class="task-comments" style="margin-top:12px; font-size:13px;">
+                        <span style="font-weight:600; color:var(--h1-color);">
+                            Comentários:
+                        </span><br>
+                        <%
+                            boolean hasComments = false;
+                            if (allComments != null) {
+                                for (Comment cmt : allComments) {
+                                    if (cmt.getTask_id() == t.getTask_id()) {
+                                        hasComments = true;
+                        %>
+                        <div style="margin-top:4px; padding:4px 8px;
+                             border-left:2px solid var(--input-border);
+                             display:flex; justify-content:space-between; align-items:center;">
+                            <span style="color:var(--description-text);">
+                                #<%= cmt.getComment_id()%>: <%= cmt.getComment()%>
+                            </span>
+                            <span>
+                                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?comment_id=<%= cmt.getComment_id()%>"
+                                   style="font-size:12px; color:#007bff; margin-right:8px; text-decoration:none;">
+                                    Editar
+                                </a>
+                                <a href="${pageContext.request.contextPath}/app?task=comment&action=delete&id=<%= cmt.getComment_id()%>&from=tasks"
+                                   class="delete" style="font-size:12px; color:#dc3545; text-decoration:none;">
+                                    Excluir
+                                </a>
+                            </span>
+                        </div>
+                        <%
+                                    }
+                                }
+                            }
+                            if (!hasComments) {
+                        %>
+                        <span style="color:var(--label-default);">Nenhum comentário ainda.</span>
+                        <%
+                            }
+                        %>
+                    </div>
+
+                    <br>
 
                     <div class="task-actions">
                         <a href="${pageContext.request.contextPath}/app?task=task&action=edit&id=<%= t.getTask_id()%>">

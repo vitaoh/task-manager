@@ -17,17 +17,16 @@ public class AuthenticatorLogin implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        
+
         HttpSession sessao = httpServletRequest.getSession(false);
-        
-        // ✅ CORRIGIDO: Verificar se sessão é null ANTES de acessar atributos
+
         if (sessao == null) {
             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/app?task=login");
             return;
         }
-        
+
         User user = (User) sessao.getAttribute("user");
-        
+
         if (user == null) {
             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/app?task=login");
         } else {

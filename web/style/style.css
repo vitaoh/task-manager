@@ -505,7 +505,7 @@ button:hover {
 }
 
 .task-description {
-    margin: 10px 0 12px 0;        
+    margin: 10px 0 12px 0;
     padding: 10px 12px;
     background: var(--background-secondary);
     border-left: 3px solid var(--label-float);

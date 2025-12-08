@@ -4,6 +4,9 @@
     <welcome-file-list>
         <welcome-file>/app/login.jsp</welcome-file>
     </welcome-file-list>
+    <listener>
+        <listener-class>controller.ContextListener</listener-class>
+    </listener>
     <servlet>
         <servlet-name>FrontController</servlet-name>
         <servlet-class>controller.FrontController</servlet-class>

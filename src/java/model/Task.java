@@ -150,7 +150,7 @@ public class Task extends DataAccessObject {
         category_id = (Integer) data.get(9);
         return this;
     }
-    
+
     @Override
     protected Task copy() {
         Task cp = new Task();

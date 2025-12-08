@@ -11,20 +11,20 @@
         <div class="container">
             <h1>Registrar</h1>
             <h2>Crie sua conta</h2>
-            
+
             <br>
 
             <%
                 String msg = (String) request.getAttribute("msg");
                 if (msg != null) {
             %>
-                <div style="color: #dc3545; background-color: rgba(220, 53, 69, 0.1); padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
-                    <%= msg %>
-                </div>
-            <% } %>
+            <div style="color: #dc3545; background-color: rgba(220, 53, 69, 0.1); padding: 10px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #dc3545;">
+                <%= msg%>
+            </div>
+            <% }%>
 
             <br>
-            
+
             <form action="${pageContext.request.contextPath}/app?task=register" method="POST">
                 <div class="input-group">
                     <input 

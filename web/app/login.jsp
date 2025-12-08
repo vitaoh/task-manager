@@ -16,7 +16,7 @@
     <body>
         <div class="container">
             <h1>Login</h1>
-            
+
             <br>
             <%                String msg = (String) request.getAttribute("msg");
                 if (msg != null) {
@@ -25,7 +25,7 @@
                 <%= msg%>
             </div>
             <% } %>
-            
+
             <br>
 
             <%                System.out.println("=== LOGIN.JSP CARREGADO ===");

@@ -18,7 +18,7 @@
             <h1><%= editing ? "Editar Categoria" : "Nova Categoria"%></h1>
 
             <br>
-            
+
             <form action="${pageContext.request.contextPath}/app" method="post">
                 <input type="hidden" name="task" value="category">
                 <input type="hidden" name="action" value="<%= editing ? "update" : "create"%>">

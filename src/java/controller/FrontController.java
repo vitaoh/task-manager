@@ -171,7 +171,9 @@ public class FrontController extends HttpServlet {
 
     private void doGetComment(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+
         String action = request.getParameter("action");
+        String from = request.getParameter("from");
 
         if ("delete".equals(action)) {
             try {
@@ -184,7 +186,11 @@ public class FrontController extends HttpServlet {
             }
         }
 
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
+        if ("tasks".equals(from)) {
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
+        }
     }
 
     private void doGetUser(HttpServletRequest request, HttpServletResponse response)
@@ -221,98 +227,111 @@ public class FrontController extends HttpServlet {
             throws ServletException, IOException, Exception {
 
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "create";
+
+        try {
+            if (action == null) {
+                action = "create";
+            }
+
+            int id = 0;
+            if ("update".equals(action)) {
+                id = Integer.parseInt(request.getParameter("task_id"));
+            }
+
+            String title = request.getParameter("title");
+            String description = request.getParameter("description");
+            String priority = request.getParameter("priority");
+            String status = request.getParameter("status");
+            String dueDateStr = request.getParameter("due_date");
+            String categoryStr = request.getParameter("category_id");
+
+            HttpSession session = request.getSession(false);
+            User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+            String userName = (userSession != null) ? userSession.getUser()
+                    : request.getParameter("user");
+
+            Task task = new Task();
+            task.setTask_id(id);
+
+            if ("update".equals(action)) {
+                task.load();
+                task.setUpdated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+            } else {
+                task.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
+            }
+
+            task.setTitle(title);
+            task.setDescription(description);
+            task.setPriority(priority);
+            task.setStatus(status);
+            task.setUser(userName);
+
+            if (categoryStr != null && !categoryStr.trim().isEmpty()) {
+                task.setCategory_id(Integer.parseInt(categoryStr));
+            } else {
+                task.setCategory_id(0);
+            }
+
+            if (dueDateStr == null || dueDateStr.trim().isEmpty()) {
+                task.setDue_date(null);
+            } else {
+                task.setDue_date(java.sql.Date.valueOf(dueDateStr));
+            }
+
+            task.save();
+
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+        } catch (Exception e) {
+            ExceptionLogTrack.getInstance().addLog(e);
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
         }
-
-        int id = 0;
-        if ("update".equals(action)) {
-            id = Integer.parseInt(request.getParameter("task_id"));
-        }
-
-        String title = request.getParameter("title");
-        String description = request.getParameter("description");
-        String priority = request.getParameter("priority");
-        String status = request.getParameter("status");
-        String dueDateStr = request.getParameter("due_date");
-        String categoryStr = request.getParameter("category_id");
-
-        HttpSession session = request.getSession(false);
-        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
-        String userName = (userSession != null) ? userSession.getUser()
-                : request.getParameter("user");
-
-        Task task = new Task();
-        task.setTask_id(id);
-
-        if ("update".equals(action)) {
-            task.load();
-            task.setUpdated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-        } else {
-            task.setCreated_at(new java.sql.Timestamp(System.currentTimeMillis()));
-        }
-
-        task.setTitle(title);
-        task.setDescription(description);
-        task.setPriority(priority);
-        task.setStatus(status);
-        task.setUser(userName);
-
-        if (categoryStr != null && !categoryStr.trim().isEmpty()) {
-            task.setCategory_id(Integer.parseInt(categoryStr));
-        } else {
-            task.setCategory_id(0);
-        }
-
-        if (dueDateStr == null || dueDateStr.trim().isEmpty()) {
-            task.setDue_date(null);
-        } else {
-            task.setDue_date(java.sql.Date.valueOf(dueDateStr));
-        }
-
-        task.save();
-
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
     }
 
     private void doPostCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, Exception {
 
         String action = request.getParameter("action");
-        if (action == null) {
-            action = "create";
+
+        try {
+            if (action == null) {
+                action = "create";
+            }
+
+            int id = 0;
+            if ("update".equals(action)) {
+                id = Integer.parseInt(request.getParameter("category_id"));
+            }
+
+            String name = request.getParameter("name");
+            String difficulty = request.getParameter("difficulty");
+
+            HttpSession session = request.getSession(false);
+            User userSession = (session != null) ? (User) session.getAttribute("user") : null;
+            String userName = (userSession != null) ? userSession.getUser() : null;
+
+            Category category = new Category();
+            category.setCategory_id(id);
+
+            if ("update".equals(action)) {
+                category.load();
+            }
+
+            category.setName(name);
+            category.setDifficulty(difficulty);
+            category.setUser(userName);
+
+            category.save();
+
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
+        } catch (Exception e) {
+            ExceptionLogTrack.getInstance().addLog(e);
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
         }
-
-        int id = 0;
-        if ("update".equals(action)) {
-            id = Integer.parseInt(request.getParameter("category_id"));
-        }
-
-        String name = request.getParameter("name");
-        String difficulty = request.getParameter("difficulty");
-
-        HttpSession session = request.getSession(false);
-        User userSession = (session != null) ? (User) session.getAttribute("user") : null;
-        String userName = (userSession != null) ? userSession.getUser() : null;
-
-        Category category = new Category();
-        category.setCategory_id(id);
-
-        if ("update".equals(action)) {
-            category.load();
-        }
-
-        category.setName(name);
-        category.setDifficulty(difficulty);
-        category.setUser(userName);
-
-        category.save();
-
-        response.sendRedirect(request.getContextPath() + "/app/logged_in/categories.jsp");
     }
 
     private void doPostComment(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+
         String action = request.getParameter("action");
 
         try {

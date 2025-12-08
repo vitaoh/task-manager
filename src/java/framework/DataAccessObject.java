@@ -11,10 +11,10 @@ import java.util.StringJoiner;
 
 public abstract class DataAccessObject {
 
-    private String tableEntity; 
+    private String tableEntity;
     private boolean novelEntity;
     private boolean changedEntity;
-    private HashMap<String, Object> dirtyFields; 
+    private HashMap<String, Object> dirtyFields;
 
     public DataAccessObject(String tableEntity) {
         setTableEntity(tableEntity);

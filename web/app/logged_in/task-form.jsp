@@ -14,15 +14,13 @@
     List<Category> categorias = (List<Category>) request.getAttribute("categorias");
 %>
 <%
-    // usuário logado
     User logged = (User) session.getAttribute("user");
     String loggedUser = (logged != null) ? logged.getUser() : null;
 
-    // filtra categorias do usuário
     java.util.ArrayList<Category> catUser = new java.util.ArrayList<>();
     if (categorias != null && loggedUser != null) {
         for (Category c : categorias) {
-            if (loggedUser.equals(c.getUser())) {   // precisa existir getUser() em Category
+            if (loggedUser.equals(c.getUser())) {
                 catUser.add(c);
             }
         }

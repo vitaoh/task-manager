@@ -80,7 +80,7 @@
                 </div>
 
                 <%
-                    } // fim for
+                    }
 
                     if (!hasAny) {
                 %>

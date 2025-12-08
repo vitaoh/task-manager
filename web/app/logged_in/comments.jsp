@@ -15,7 +15,7 @@
 
             <div class="tasks-header">
                 <h1 style="margin:0;">Comentários</h1>
-                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp"
+                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?from=comments"
                    class="new-task-btn">+ Novo</a>
             </div>
 

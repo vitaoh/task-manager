@@ -333,6 +333,7 @@ public class FrontController extends HttpServlet {
             throws ServletException, IOException, SQLException {
 
         String action = request.getParameter("action");
+        String from = request.getParameter("from");
 
         try {
             int id = Integer.parseInt(request.getParameter("comment_id"));
@@ -351,7 +352,11 @@ public class FrontController extends HttpServlet {
 
             comment.save();
 
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
+            if ("tasks".equals(from)) {
+                response.sendRedirect(request.getContextPath() + "/app/logged_in/tasks.jsp");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");
+            }
         } catch (NumberFormatException e) {
             ExceptionLogTrack.getInstance().addLog(e);
             response.sendRedirect(request.getContextPath() + "/app/logged_in/comments.jsp");

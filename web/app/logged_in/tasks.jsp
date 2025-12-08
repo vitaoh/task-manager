@@ -127,14 +127,21 @@
                         Atualizada em: <%= updatedAt%>
                         <% } else { %>
                         Nunca atualizada
-                        <% } %>
+                        <% }%>
                     </div>
 
-                    <!-- Comentários da tarefa -->
-                    <div class="task-comments" style="margin-top:12px; font-size:13px;">
-                        <span style="font-weight:600; color:var(--h1-color);">
+
+                    <div class="task-comments" style="margin-top:8px; font-size:13px;">
+                        <span style="font-weight:600; color:var(--label-float);">
                             Comentários:
-                        </span><br>
+                        </span>
+                        <!-- botão de adicionar comentário para esta tarefa -->
+                        <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?task_id=<%= t.getTask_id()%>&from=tasks"
+                           style="font-size:12px; margin-left:8px; text-decoration:none; color:#007bff;">
+                            + Adicionar
+                        </a>
+
+                        <br>
                         <%
                             boolean hasComments = false;
                             if (allComments != null) {
@@ -149,12 +156,12 @@
                                 #<%= cmt.getComment_id()%>: <%= cmt.getComment()%>
                             </span>
                             <span>
-                                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?comment_id=<%= cmt.getComment_id()%>"
+                                <a href="${pageContext.request.contextPath}/app/logged_in/comment-form.jsp?comment_id=<%= cmt.getComment_id()%>&from=tasks"
                                    style="font-size:12px; color:#007bff; margin-right:8px; text-decoration:none;">
                                     Editar
                                 </a>
                                 <a href="${pageContext.request.contextPath}/app?task=comment&action=delete&id=<%= cmt.getComment_id()%>&from=tasks"
-                                   class="delete" style="font-size:12px; color:#dc3545; text-decoration:none;">
+                                   style="font-size:12px; color:#dc3545; text-decoration:none;">
                                     Excluir
                                 </a>
                             </span>

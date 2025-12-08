@@ -1,6 +1,7 @@
 <%@page import="model.Task"%>
 <%@ page import="model.Category" %>
 <%@ page import="java.util.List" %>
+<%@page import="model.User"%>
 <%@ page import="java.time.LocalDate, java.time.format.DateTimeFormatter" %>
 <%
     LocalDate hoje = LocalDate.now();
@@ -12,6 +13,22 @@
 <%
     List<Category> categorias = (List<Category>) request.getAttribute("categorias");
 %>
+<%
+    // usuário logado
+    User logged = (User) session.getAttribute("user");
+    String loggedUser = (logged != null) ? logged.getUser() : null;
+
+    // filtra categorias do usuário
+    java.util.ArrayList<Category> catUser = new java.util.ArrayList<>();
+    if (categorias != null && loggedUser != null) {
+        for (Category c : categorias) {
+            if (loggedUser.equals(c.getUser())) {   // precisa existir getUser() em Category
+                catUser.add(c);
+            }
+        }
+    }
+%>
+
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
@@ -93,21 +110,20 @@
 
                     <div class="select-group input-group">
                         <select id="category_id" name="category_id" required>
-                            <option value="0" disabled>Sem categoria</option>
+                            <option value="" disabled <%= !editing ? "selected" : ""%>>Sem categoria</option>
 
-                            <% if (categorias != null) {
-                                    for (Category c : categorias) {
+                            <% if (catUser != null) {
+                                    for (Category c : catUser) {
                                         boolean selected = editing && t.getCategory_id() == c.getCategory_id();
                             %>
-
                             <option value="<%= c.getCategory_id()%>" <%= selected ? "selected" : ""%>>
                                 <%= c.getName()%>
                             </option>
-
-                            <%  }
+                            <%     }
                                 }
                             %>
                         </select>
+
                         <label for="category_id">Categoria</label>
                     </div>
 

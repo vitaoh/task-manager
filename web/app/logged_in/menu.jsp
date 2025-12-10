@@ -19,6 +19,7 @@
                     <li><a href="${pageContext.request.contextPath}/app/logged_in/tasks.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📋 Tarefas</a></li>
                     <li><a href="${pageContext.request.contextPath}/app/logged_in/categories.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">📁 Categorias</a></li>
                     <li><a href="${pageContext.request.contextPath}/app/logged_in/comments.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">💬 Comentários</a></li>
+                    <li><a href="${pageContext.request.contextPath}/app/logged_in/account.jsp" style="display:block; padding:10px; border-radius:5px; color:#007bff; text-decoration:none; margin-bottom:5px;">👤 Editar conta</a></li>
                     <li><a href="${pageContext.request.contextPath}/app?task=logout" style="display:block; padding:10px; border-radius:5px; color:#dc3545; text-decoration:none;">🚪 Logout, (<%= user.getUser()%>)</a></li>
                 </ul>
             </nav>

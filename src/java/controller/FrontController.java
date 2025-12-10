@@ -365,7 +365,11 @@ public class FrontController extends HttpServlet {
 
     private void doPostUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
+
         String action = request.getParameter("action");
+        if (action == null) {
+            action = "create";
+        }
 
         try {
             String userName = request.getParameter("user");
@@ -386,7 +390,16 @@ public class FrontController extends HttpServlet {
 
             user.save();
 
-            response.sendRedirect(request.getContextPath() + "/app/logged_in/users.jsp");
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                User logged = (User) session.getAttribute("user");
+                if (logged != null && logged.getUser().equals(userName)) {
+                    session.setAttribute("user", user);
+                }
+            }
+
+            response.sendRedirect(request.getContextPath() + "/app/logged_in/menu.jsp");
+
         } catch (Exception e) {
             ExceptionLogTrack.getInstance().addLog(e);
             response.sendRedirect(request.getContextPath() + "/app/logged_in/users.jsp");

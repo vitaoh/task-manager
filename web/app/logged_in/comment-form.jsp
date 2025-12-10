@@ -1,6 +1,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="model.Task"%>
 <%@page import="model.Comment"%>
+<%@page import="model.User"%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%
     String from = request.getParameter("from");
@@ -36,6 +37,18 @@
     }
 
     ArrayList<Task> tasks = new Task().getAllTableEntities();
+
+    User logged = (User) session.getAttribute("user");
+    String loggedUser = (logged != null) ? logged.getUser() : null;
+
+    ArrayList<Task> userTasks = new ArrayList<>();
+    if (tasks != null && loggedUser != null) {
+        for (Task t : tasks) {
+            if (loggedUser.equals(t.getUser())) {
+                userTasks.add(t);
+            }
+        }
+    }
 %>
 <!DOCTYPE html>
 <html>
@@ -66,8 +79,8 @@
                             Selecione a tarefa
                         </option>
 
-                        <% if (tasks != null) {
-                                for (Task t : tasks) {
+                        <% if (userTasks != null) {
+                                for (Task t : userTasks) {
                                     boolean selected;
                                     if (editing) {
                                         selected = (c.getTask_id() == t.getTask_id());
@@ -82,6 +95,7 @@
                             }
                         %>
                     </select>
+
                     <label for="task_id">Tarefa</label>
                 </div>
 
